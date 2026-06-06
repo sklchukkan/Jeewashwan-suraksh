@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Register | Jeevashwan Surakhsh</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
+</head>
+
+<body style="background-color: var(--color-bg);">
+    <nav id="navbar" class="scrolled">
+        <div class="nav-container">
+            <div class="logo">
+                <a href="index.html" style="text-decoration:none; color:inherit; display:flex; align-items:center;">
+                    <span class="material-icons-outlined logo-icon">pets</span>
+                    <span>Jeevashwan Surakhsh</span>
+                </a>
+            </div>
+        </div>
+    </nav>
+    <div style="display:flex; justify-content:center; padding:120px 20px;">
+        <div class="feature-card" style="width:100%; max-width:400px; text-align:left;">
+            <h2 style="margin-bottom:20px; color: var(--color-dark);">Register</h2>
+            <form id="registerForm">
+                <div style="margin-bottom:15px;">
+                    <label style="color: var(--color-gray);">Role</label>
+                    <select id="role"
+                        style="width:100%; padding:10px; margin-top:5px; border-radius:8px; border:1px solid #ccc; font-family:inherit;">
+                        <option value="user">Normal User</option>
+                        <option value="ngo">NGO</option>
+                    </select>
+                </div>
+                <div style="margin-bottom:15px;">
+                    <label style="color: var(--color-gray);">Full Name / NGO Name</label>
+                    <input type="text" id="name" required
+                        style="width:100%; padding:10px; margin-top:5px; border-radius:8px; border:1px solid #ccc; font-family:inherit;">
+                </div>
+                <div style="margin-bottom:15px;">
+                    <label style="color: var(--color-gray);">Username</label>
+                    <input type="text" id="username" required
+                        style="width:100%; padding:10px; margin-top:5px; border-radius:8px; border:1px solid #ccc; font-family:inherit;">
+                </div>
+                <div style="margin-bottom:15px;">
+                    <label style="color: var(--color-gray);">Phone Number</label>
+                    <input type="text" id="phone" required
+                        style="width:100%; padding:10px; margin-top:5px; border-radius:8px; border:1px solid #ccc; font-family:inherit;">
+                </div>
+                <div style="margin-bottom:15px;">
+                    <label style="color: var(--color-gray);">Email Address (Optional)</label>
+                    <input type="email" id="email"
+                        style="width:100%; padding:10px; margin-top:5px; border-radius:8px; border:1px solid #ccc; font-family:inherit;">
+                </div>
+                <div style="margin-bottom:20px;">
+                    <label style="color: var(--color-gray);">Password</label>
+                    <input type="password" id="password" required
+                        style="width:100%; padding:10px; margin-top:5px; border-radius:8px; border:1px solid #ccc; font-family:inherit;">
+                </div>
+                <button type="submit" class="btn btn-primary full-width">Register</button>
+                <div id="registerError" style="color:red; margin-top:10px; display:none;"></div>
+            </form>
+            <p style="margin-top:20px; text-align:center; color: var(--color-gray);">Already have an account? <a
+                    href="login.html" style="color: var(--color-primary); font-weight: 500;">Login</a></p>
+        </div>
+    </div>
+    <script>
+        document.getElementById('registerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const payload = {
+                role: document.getElementById('role').value,
+                name: document.getElementById('name').value,
+                username: document.getElementById('username').value,
+                phone: document.getElementById('phone').value,
+                email: document.getElementById('email').value,
+                password: document.getElementById('password').value
+            };
+            try {
+                console.log("Attempting to register:", payload.username);
+                if (window.location.protocol === 'file:') {
+                    throw new Error('You are opening this file directly. Please use http://localhost:3000 instead.');
+                }
+                const res = await fetch('/api/auth/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    alert('Registration successful! Please login.');
+                    window.location.href = 'login.html';
+                } else {
+                    document.getElementById('registerError').innerText = data.details || data.error || 'Registration failed.';
+                    document.getElementById('registerError').style.display = 'block';
+                }
+            } catch (err) {
+                console.error("Registration error:", err);
+                document.getElementById('registerError').innerText = err.message || 'Server connection failed.';
+                document.getElementById('registerError').style.display = 'block';
+            }
+        });
+    </script>
+</body>
+
+</html>

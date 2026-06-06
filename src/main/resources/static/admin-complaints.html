@@ -1,0 +1,976 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Complaints | Admin Portal</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <!-- Material Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
+    <!-- Base Stylesheet -->
+    <link rel="stylesheet" href="style.css">
+    
+    <style>
+        :root {
+            --sidebar-width: 260px;
+            --color-sidebar-bg: #1e293b;
+            --color-sidebar-hover: #334155;
+            --color-active-link: #3b82f6;
+            --color-card-border: #f1f5f9;
+        }
+
+        body {
+            display: flex;
+            background-color: #f8fafc;
+            min-height: 100vh;
+            font-family: var(--font-body);
+        }
+
+        /* Sidebar Styling */
+        .sidebar {
+            width: var(--sidebar-width);
+            background-color: var(--color-sidebar-bg);
+            color: #f8fafc;
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            display: flex;
+            flex-direction: column;
+            padding: 24px;
+            z-index: 100;
+        }
+
+        .sidebar-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-family: var(--font-heading);
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: #3b82f6;
+            margin-bottom: 40px;
+        }
+
+        .sidebar-logo span {
+            color: #ef4444;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            flex: 1;
+        }
+
+        .sidebar-menu-item a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            border-radius: var(--radius-sm);
+            color: #94a3b8;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+
+        .sidebar-menu-item a:hover {
+            background-color: var(--color-sidebar-hover);
+            color: #f8fafc;
+        }
+
+        .sidebar-menu-item.active a {
+            background-color: var(--color-active-link);
+            color: #ffffff;
+        }
+
+        .sidebar-footer {
+            margin-top: auto;
+        }
+
+        /* Main Content Container */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            flex: 1;
+            padding: 40px;
+            overflow-y: auto;
+        }
+
+        /* Upper Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 20px;
+            margin-bottom: 32px;
+        }
+
+        .stat-card {
+            background: #ffffff;
+            border-radius: var(--radius-sm);
+            padding: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border: 1px solid #f1f5f9;
+        }
+
+        .stat-info h3 {
+            font-size: 0.875rem;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 4px;
+        }
+
+        .stat-info p {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: #1e293b;
+        }
+
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .stat-icon.blue { background-color: #eff6ff; color: #3b82f6; }
+        .stat-icon.yellow { background-color: #fefce8; color: #eab308; }
+        .stat-icon.orange { background-color: #fff7ed; color: #f97316; }
+        .stat-icon.green { background-color: #f0fdf4; color: #22c55e; }
+        .stat-icon.red { background-color: #fef2f2; color: #ef4444; }
+
+        /* Workspace Grid */
+        .workspace {
+            display: grid;
+            grid-template-columns: 420px 1fr;
+            gap: 24px;
+            height: calc(100vh - 240px);
+            min-height: 500px;
+        }
+
+        .list-panel {
+            background: #ffffff;
+            border-radius: var(--radius-sm);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            border: 1px solid #f1f5f9;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .panel-header {
+            padding: 20px;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .search-wrapper {
+            position: relative;
+            margin-bottom: 12px;
+        }
+
+        .search-wrapper input {
+            width: 100%;
+            padding: 10px 16px 10px 40px;
+            border: 1px solid #cbd5e1;
+            border-radius: var(--radius-sm);
+            font-size: 0.95rem;
+        }
+
+        .search-wrapper span {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8;
+        }
+
+        .filter-tabs {
+            display: flex;
+            gap: 6px;
+            border-bottom: 1px solid #e2e8f0;
+            padding-bottom: 8px;
+        }
+
+        .filter-tab {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: #64748b;
+            cursor: pointer;
+            border: 1px solid transparent;
+            transition: var(--transition);
+        }
+
+        .filter-tab:hover {
+            background-color: #f1f5f9;
+        }
+
+        .filter-tab.active {
+            background-color: #e2e8f0;
+            color: #0f172a;
+            border-color: #cbd5e1;
+        }
+
+        .complaints-scroll-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        /* Complaint Cards */
+        .complaint-card {
+            border: 1px solid #f1f5f9;
+            background: #ffffff;
+            border-radius: 8px;
+            padding: 16px;
+            cursor: pointer;
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .complaint-card:hover {
+            border-color: #cbd5e1;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+            transform: translateY(-1px);
+        }
+
+        .complaint-card.active {
+            border-color: #3b82f6;
+            background-color: #eff6ff;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 8px;
+        }
+
+        .card-title {
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: #1e293b;
+        }
+
+        .card-date {
+            font-size: 0.8rem;
+            color: #94a3b8;
+        }
+
+        .status-badge {
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 12px;
+            display: inline-block;
+        }
+
+        .status-badge.pending { background-color: #fef9c3; color: #854d0e; }
+        .status-badge.assigned { background-color: #ffedd5; color: #9a3412; }
+        .status-badge.completed { background-color: #dcfce7; color: #166534; }
+        .status-badge.rejected { background-color: #fee2e2; color: #991b1b; }
+
+        .reject-form {
+            background-color: #fef2f2;
+            border: 1px solid #fecaca;
+            border-radius: 12px;
+            padding: 24px;
+            margin-top: 16px;
+        }
+
+        .reject-form h4 {
+            color: #991b1b;
+            margin-bottom: 12px;
+            font-size: 1.05rem;
+        }
+
+        .reject-form select,
+        .reject-form textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #fca5a5;
+            border-radius: 6px;
+            font-family: inherit;
+            background: #fff;
+            margin-bottom: 12px;
+        }
+
+        .card-desc {
+            font-size: 0.85rem;
+            color: #64748b;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            margin-top: 6px;
+        }
+
+        /* Details Panel */
+        .details-panel {
+            background: #ffffff;
+            border-radius: var(--radius-sm);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            border: 1px solid #f1f5f9;
+            overflow-y: auto;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .placeholder-view {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            flex: 1;
+            color: #94a3b8;
+            text-align: center;
+        }
+
+        .detail-header {
+            border-bottom: 1px solid #f1f5f9;
+            padding-bottom: 20px;
+            margin-bottom: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .detail-title h2 {
+            font-size: 1.5rem;
+            color: #1e293b;
+            margin-bottom: 4px;
+        }
+
+        .grid-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+
+        .info-group label {
+            display: block;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #94a3b8;
+            margin-bottom: 4px;
+        }
+
+        .info-group p {
+            color: #334155;
+            font-weight: 500;
+        }
+
+        .desc-box {
+            background-color: #f8fafc;
+            border: 1px solid #e2e8f0;
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 24px;
+            font-size: 0.95rem;
+            color: #334155;
+        }
+
+        /* Action Forms */
+        .assign-form {
+            background-color: #eff6ff;
+            border: 1px solid #bfdbfe;
+            border-radius: 12px;
+            padding: 24px;
+            margin-top: auto;
+        }
+
+        .assign-form h4 {
+            color: #1e3a8a;
+            margin-bottom: 12px;
+            font-size: 1.05rem;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 120px auto;
+            gap: 12px;
+            align-items: flex-end;
+        }
+
+        .assign-form select, .assign-form input {
+            padding: 10px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            font-family: inherit;
+            background: #fff;
+        }
+
+        /* Mock Map */
+        .detail-map {
+            height: 200px;
+            background-color: #e2e8f0;
+            border-radius: 8px;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #64748b;
+            font-size: 0.9rem;
+            border: 1px solid #cbd5e1;
+        }
+
+        .report-image-box {
+            margin-bottom: 24px;
+        }
+
+        .report-image-box label {
+            display: block;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #94a3b8;
+            margin-bottom: 8px;
+        }
+
+        .report-image-box img {
+            max-width: 100%;
+            max-height: 280px;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            object-fit: contain;
+            background: #f8fafc;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-logo">
+            <span class="material-icons-outlined">pets</span>
+            Jeevashwan Admin
+        </div>
+        <ul class="sidebar-menu">
+            <li class="sidebar-menu-item">
+                <a href="dashboard-admin.html">
+                    <span class="material-icons-outlined">dashboard</span>
+                    Dashboard
+                </a>
+            </li>
+            <li class="sidebar-menu-item active">
+                <a href="admin-complaints.html">
+                    <span class="material-icons-outlined">report_problem</span>
+                    Manage Complaints
+                </a>
+            </li>
+        </ul>
+        <div class="sidebar-footer">
+            <li class="sidebar-menu-item" style="list-style: none; margin-bottom: 10px;">
+                <a href="#" onclick="openProfileModal(); return false;">
+                    <span class="material-icons-outlined">account_circle</span>
+                    Profile
+                </a>
+            </li>
+            <li class="sidebar-menu-item" style="list-style: none;">
+                <a href="#" onclick="logout()">
+                    <span class="material-icons-outlined">logout</span>
+                    Logout
+                </a>
+            </li>
+        </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+            <h2>Stray Dog Complaints Manager</h2>
+            <div style="font-size: 0.95rem; color:#64748b;">Logged in as <strong>Administrator</strong></div>
+        </div>
+
+        <!-- Stats Row -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-info">
+                    <h3>Total Reports</h3>
+                    <p id="stat-total">0</p>
+                </div>
+                <div class="stat-icon blue">
+                    <span class="material-icons-outlined">description</span>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-info">
+                    <h3>Pending</h3>
+                    <p id="stat-pending">0</p>
+                </div>
+                <div class="stat-icon yellow">
+                    <span class="material-icons-outlined">pending_actions</span>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-info">
+                    <h3>Assigned</h3>
+                    <p id="stat-assigned">0</p>
+                </div>
+                <div class="stat-icon orange">
+                    <span class="material-icons-outlined">assignment_ind</span>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-info">
+                    <h3>Completed</h3>
+                    <p id="stat-completed">0</p>
+                </div>
+                <div class="stat-icon green">
+                    <span class="material-icons-outlined">task_alt</span>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-info">
+                    <h3>Rejected</h3>
+                    <p id="stat-rejected">0</p>
+                </div>
+                <div class="stat-icon red">
+                    <span class="material-icons-outlined">block</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Complaints Workspace -->
+        <div class="workspace">
+            
+            <!-- Left Side: List Panel -->
+            <div class="list-panel">
+                <div class="panel-header">
+                    <div class="search-wrapper">
+                        <span class="material-icons-outlined">search</span>
+                        <input type="text" id="searchInput" placeholder="Search by Area..." oninput="filterComplaints()">
+                    </div>
+                    <div class="filter-tabs">
+                        <div class="filter-tab active" onclick="setFilter('All', this)">All</div>
+                        <div class="filter-tab" onclick="setFilter('Pending', this)">Pending</div>
+                        <div class="filter-tab" onclick="setFilter('Assigned', this)">Assigned</div>
+                        <div class="filter-tab" onclick="setFilter('Completed', this)">Completed</div>
+                        <div class="filter-tab" onclick="setFilter('Rejected', this)">Rejected</div>
+                    </div>
+                </div>
+                <div class="complaints-scroll-list" id="complaintsList">
+                    <!-- Cards will be populated dynamically -->
+                </div>
+            </div>
+
+            <!-- Right Side: Details Panel -->
+            <div class="details-panel" id="detailsPanel">
+                <div class="placeholder-view">
+                    <span class="material-icons-outlined" style="font-size: 4rem; margin-bottom: 16px;">touch_app</span>
+                    <p>Select a complaint from the list to view full details and assign tasks to NGOs.</p>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <script>
+        const token = localStorage.getItem('token');
+        if (!token) window.location.href = 'login.html';
+
+        let complaints = [];
+        let ngos = [];
+        let currentFilter = 'All';
+        let selectedComplaintId = null;
+
+        // Fetch data on load
+        async function init() {
+            const h = { 'Authorization': 'Bearer ' + token };
+            
+            try {
+                // Fetch NGO list
+                const resN = await fetch('/api/admin/ngos', { headers: h });
+                ngos = resN.ok ? await resN.json() : [];
+
+                // Fetch complaints
+                const resC = await fetch('/api/admin/reports', { headers: h });
+                complaints = resC.ok ? await resC.json() : [];
+
+                updateStats();
+                renderComplaintsList();
+            } catch (err) {
+                console.error("Initialization error:", err);
+            }
+        }
+
+        // Update statistics cards
+        function updateStats() {
+            document.getElementById('stat-total').innerText = complaints.length;
+            document.getElementById('stat-pending').innerText = complaints.filter(c => c.status === 'Pending').length;
+            document.getElementById('stat-assigned').innerText = complaints.filter(c => c.status === 'Assigned').length;
+            document.getElementById('stat-completed').innerText = complaints.filter(c => c.status === 'Completed').length;
+            document.getElementById('stat-rejected').innerText = complaints.filter(c => c.status === 'Rejected').length;
+        }
+
+        // Render card list
+        function renderComplaintsList() {
+            const listEl = document.getElementById('complaintsList');
+            listEl.innerHTML = '';
+
+            const searchVal = document.getElementById('searchInput').value.toLowerCase();
+
+            const filtered = complaints.filter(c => {
+                const matchesSearch = (c.area_name || '').toLowerCase().includes(searchVal);
+                const matchesStatus = (currentFilter === 'All') || (c.status === currentFilter);
+                return matchesSearch && matchesStatus;
+            });
+
+            if (filtered.length === 0) {
+                listEl.innerHTML = `
+                    <div style="text-align:center; padding:30px; color:#94a3b8; font-size:0.9rem;">
+                        No complaints found.
+                    </div>
+                `;
+                return;
+            }
+
+            filtered.forEach(c => {
+                const isActive = c.id === selectedComplaintId;
+                const statusClass = c.status.toLowerCase();
+                const card = document.createElement('div');
+                card.className = `complaint-card ${isActive ? 'active' : ''}`;
+                card.onclick = () => selectComplaint(c.id);
+
+                const dateStr = c.created_at ? new Date(c.created_at).toLocaleDateString() : 'Unknown Date';
+
+                card.innerHTML = `
+                    <div class="card-header">
+                        <span class="card-title">Sighting ID: #${c.id}</span>
+                        <span class="card-date">${dateStr}</span>
+                    </div>
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <span style="font-weight:500; font-size:0.9rem; color:#475569;">${c.area_name || 'Unknown Location'}</span>
+                        <span class="status-badge ${statusClass}">${c.status}</span>
+                    </div>
+                    <div class="card-desc">${c.description || 'No description provided.'}</div>
+                `;
+                listEl.appendChild(card);
+            });
+        }
+
+        // Filter tab selection
+        function setFilter(filter, el) {
+            currentFilter = filter;
+            document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+            el.classList.add('active');
+            renderComplaintsList();
+        }
+
+        // Filter search input
+        function filterComplaints() {
+            renderComplaintsList();
+        }
+
+        // Load complaint details into the right panel
+        function selectComplaint(id) {
+            selectedComplaintId = id;
+            
+            // Highlight selected card
+            document.querySelectorAll('.complaint-card').forEach(card => {
+                card.classList.remove('active');
+            });
+            renderComplaintsList();
+
+            const c = complaints.find(item => item.id === id);
+            if (!c) return;
+
+            const detailPanel = document.getElementById('detailsPanel');
+            const dateStr = c.created_at ? new Date(c.created_at).toLocaleString() : 'Unknown';
+
+            const reportImageHtml = c.has_image
+                ? `<div class="report-image-box">
+                        <label>Sighting Photo (Click to enlarge)</label>
+                        <img src="/api/reports/${c.id}/image?token=${encodeURIComponent(token)}" alt="Report photo" style="cursor:zoom-in; transition: transform 0.2s; max-width: 100%; border-radius: 8px; border: 1px solid #e2e8f0;" onclick="openImagePreview(this.src)" title="Click to view full size">
+                   </div>`
+                : '';
+
+            let ngoOptions = ngos.map(n => `<option value="${n.id}">${n.name} (${n.phone})</option>`).join('');
+
+            let actionHtml = '';
+            if (c.status === 'Pending') {
+                actionHtml = `
+                    <div class="assign-form">
+                        <h4>Assign Stray Dog to Registered NGO</h4>
+                        <div class="form-row">
+                            <div style="display:flex; flex-direction:column; gap:4px;">
+                                <label style="font-size:0.75rem; font-weight:600; color:#475569;">Select NGO Partners</label>
+                                <select id="ngoSelect" required style="width:100%;">
+                                    <option value="">Choose NGO...</option>
+                                    ${ngoOptions}
+                                </select>
+                            </div>
+                            <div style="display:flex; flex-direction:column; gap:4px;">
+                                <label style="font-size:0.75rem; font-weight:600; color:#475569;">Budget (₹)</label>
+                                <input type="number" id="assignAmount" required placeholder="5000" style="width:100%;">
+                            </div>
+                            <button class="btn btn-primary" onclick="assignWork(${c.id})" style="padding:10px 20px;">
+                                <span class="material-icons-outlined">assignment_turned_in</span> Assign
+                            </button>
+                        </div>
+                    </div>
+                    <div class="reject-form">
+                        <h4>Reject False or Unimportant Report</h4>
+                        <label style="font-size:0.75rem; font-weight:600; color:#475569;">Rejection Reason</label>
+                        <select id="rejectReasonSelect">
+                            <option value="False or duplicate report">False or duplicate report</option>
+                            <option value="Not a stray dog case">Not a stray dog case</option>
+                            <option value="Insufficient or invalid details">Insufficient or invalid details</option>
+                            <option value="Outside service area">Outside service area</option>
+                            <option value="Spam or test submission">Spam or test submission</option>
+                            <option value="custom">Other (custom reason)</option>
+                        </select>
+                        <textarea id="rejectReasonCustom" rows="3" placeholder="Enter custom rejection reason..." style="display:none;"></textarea>
+                        <button class="btn btn-outline" onclick="rejectComplaint(${c.id})" style="padding:10px 20px; border-color:#ef4444; color:#ef4444;">
+                            <span class="material-icons-outlined">block</span> Reject Complaint
+                        </button>
+                    </div>
+                `;
+            } else if (c.status === 'Completed') {
+                actionHtml = `
+                    <div style="background-color: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 8px; padding: 20px; text-align: center; color: #64748b; margin-bottom: 16px;">
+                        <span class="material-icons-outlined" style="vertical-align:middle; margin-right:6px;">check_circle_outline</span>
+                        This complaint has already been <strong>completed</strong>.
+                    </div>
+                    <div id="receiptSection" style="margin-top: 16px; padding: 20px; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px;">
+                        <h4 style="color:#166534; margin-bottom: 12px; display:flex; align-items:center; gap:8px;">
+                            <span class="material-icons-outlined">receipt_long</span> NGO Completion Receipt
+                        </h4>
+                        <div id="receiptLoading" style="color:#166534; font-size:0.9rem;">Loading receipt details...</div>
+                    </div>
+                `;
+            } else {
+                actionHtml = `
+                    <div style="background-color: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 8px; padding: 20px; text-align: center; color: #64748b;">
+                        <span class="material-icons-outlined" style="vertical-align:middle; margin-right:6px;">check_circle_outline</span>
+                        This complaint has already been <strong>${c.status.toLowerCase()}</strong>.
+                    </div>
+                `;
+            }
+
+            detailPanel.innerHTML = `
+                <div class="detail-header">
+                    <div class="detail-title">
+                        <h2>Sighting Details (#${c.id})</h2>
+                        <span class="status-badge ${c.status.toLowerCase()}">${c.status}</span>
+                    </div>
+                </div>
+
+                <div class="detail-map" style="display:flex; flex-direction:column; align-items:center; gap:8px; justify-content:center; height:auto; padding: 20px 0;">
+                    <div style="display:flex; align-items:center;">
+                        <span class="material-icons-outlined" style="margin-right:8px; color:#ef4444;">place</span>
+                        Coordinates: ${c.location_lat}, ${c.location_lng}
+                    </div>
+                    ${c.location_lat && c.location_lng ? `
+                    <a href="https://www.google.com/maps/search/?api=1&query=${c.location_lat},${c.location_lng}" target="_blank" class="btn btn-outline" style="padding: 6px 12px; font-size: 0.85rem; display: inline-flex; align-items: center; gap: 6px; border-radius: 4px; text-decoration: none; border: 1px solid #3b82f6; color: #3b82f6; background: #fff; width: fit-content;">
+                        <span class="material-icons-outlined" style="font-size: 1.1rem;">map</span> Open in Google Maps
+                    </a>
+                    ` : ''}
+                </div>
+
+                ${reportImageHtml}
+
+                <div class="grid-info">
+                    <div class="info-group">
+                        <label>Reporter Details</label>
+                        <p>${c.name || 'Anonymous'}</p>
+                    </div>
+                    <div class="info-group">
+                        <label>Contact Phone</label>
+                        <p><a href="tel:${c.phone}" style="color:#3b82f6; text-decoration:underline;">${c.phone}</a></p>
+                    </div>
+                    <div class="info-group">
+                        <label>Email</label>
+                        <p>${c.email || 'None provided'}</p>
+                    </div>
+                    <div class="info-group">
+                        <label>Sighted Area</label>
+                        <p>${c.area_name || 'N/A'}</p>
+                    </div>
+                    <div class="info-group">
+                        <label>Landmark</label>
+                        <p>${c.landmark || 'Not provided'}</p>
+                    </div>
+                    <div class="info-group">
+                        <label>Number of Dogs</label>
+                        <p>${c.dog_count || '1'}</p>
+                    </div>
+                    <div class="info-group">
+                        <label>Report Date & Time</label>
+                        <p>${dateStr}</p>
+                    </div>
+                </div>
+
+                <div class="info-group" style="margin-bottom: 24px;">
+                    <label>Dog Behavior Sighted</label>
+                    <p style="color:#ef4444; font-weight:600;">${c.behavior || 'Calm'}</p>
+                </div>
+
+                <div class="info-group" style="margin-bottom: 24px;">
+                    <label>Detailed Sighting Description</label>
+                    <div class="desc-box">${c.description || 'No detailed description provided.'}</div>
+                </div>
+
+                ${actionHtml}
+            `;
+
+            const rejectSelect = document.getElementById('rejectReasonSelect');
+            const rejectCustom = document.getElementById('rejectReasonCustom');
+            if (rejectSelect && rejectCustom) {
+                rejectSelect.addEventListener('change', () => {
+                    rejectCustom.style.display = rejectSelect.value === 'custom' ? 'block' : 'none';
+                });
+            }
+
+            if (c.status === 'Completed') {
+                fetch(`/api/admin/complaints/${c.id}/receipt`, { headers: { 'Authorization': 'Bearer ' + token } })
+                    .then(res => res.ok ? res.json() : null)
+                    .then(receipt => {
+                        const loadingEl = document.getElementById('receiptLoading');
+                        if (!loadingEl) return;
+                        if (receipt) {
+                            let receiptMedia = '';
+                            if (receipt.has_image) {
+                                const imageUrl = `/api/receipts/${receipt.id}/image?token=${encodeURIComponent(token)}`;
+                                receiptMedia = `
+                                    <div style="margin-top:10px;">
+                                        <img src="${imageUrl}" alt="Receipt #${receipt.id}" style="max-width:100%; max-height:300px; border-radius:8px; border:1px solid #cbd5e1; cursor:zoom-in;" onclick="openImagePreview(this.src)">
+                                    </div>
+                                `;
+                            } else if (receipt.file_url) {
+                                receiptMedia = `
+                                    <div style="margin-top:10px;">
+                                        <a href="${receipt.file_url}" target="_blank" class="btn btn-outline" style="display:inline-flex; align-items:center; gap:6px;">
+                                            <span class="material-icons-outlined">visibility</span> View Uploaded File
+                                        </a>
+                                    </div>
+                                `;
+                            } else {
+                                receiptMedia = '<p style="color:#64748b; font-style:italic;">No attachment provided.</p>';
+                            }
+                            
+                            const dateStr = receipt.uploaded_at ? new Date(receipt.uploaded_at).toLocaleString() : 'N/A';
+                            loadingEl.parentElement.innerHTML = `
+                                <h4 style="color:#166534; margin-bottom: 12px; display:flex; align-items:center; gap:8px;">
+                                    <span class="material-icons-outlined">receipt_long</span> NGO Completion Receipt
+                                </h4>
+                                <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px; font-size:0.9rem; color:#166534;">
+                                    <div><strong>Receipt ID:</strong> #${receipt.id}</div>
+                                    <div><strong>Amount Paid:</strong> ₹${receipt.amount}</div>
+                                    <div><strong>Uploaded At:</strong> ${dateStr}</div>
+                                </div>
+                                ${receiptMedia}
+                            `;
+                        } else {
+                            loadingEl.innerText = 'No receipt found for this completed complaint.';
+                        }
+                    })
+                    .catch(err => {
+                        const loadingEl = document.getElementById('receiptLoading');
+                        if (loadingEl) loadingEl.innerText = 'Failed to load receipt details.';
+                    });
+            }
+        }
+
+        // Action Trigger to Assign NGO Work
+        async function assignWork(complaintId) {
+            const ngoId = document.getElementById('ngoSelect').value;
+            const amount = document.getElementById('assignAmount').value;
+            if(!ngoId || !amount) return alert('Please select a registered NGO and fill out the budget amount.');
+
+            try {
+                const res = await fetch('/api/admin/quotations', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+                    body: JSON.stringify({ complaint_id: complaintId, ngo_id: ngoId, amount: amount })
+                });
+                
+                if(res.ok) {
+                    alert('Work assigned and quotation sent successfully!');
+                    location.reload();
+                } else {
+                    const data = await res.json();
+                    alert('Error assigning work: ' + (data.error || 'Unknown Error'));
+                }
+            } catch(e) {
+                alert('Connection failure trying to submit work assignment.');
+            }
+        }
+
+        async function rejectComplaint(complaintId) {
+            const reasonSelect = document.getElementById('rejectReasonSelect');
+            const customReason = document.getElementById('rejectReasonCustom');
+            let reason = reasonSelect ? reasonSelect.value : 'False or unimportant report';
+
+            if (reason === 'custom') {
+                reason = (customReason?.value || '').trim();
+                if (!reason) return alert('Please enter a custom rejection reason.');
+            }
+
+            if (!confirm('Reject this complaint as false or unimportant?')) return;
+
+            try {
+                const res = await fetch(`/api/admin/reports/${complaintId}/reject`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+                    body: JSON.stringify({ reason })
+                });
+
+                if (res.ok) {
+                    alert('Complaint rejected successfully.');
+                    location.reload();
+                } else {
+                    const data = await res.json();
+                    alert('Error rejecting complaint: ' + (data.error || 'Unknown Error'));
+                }
+            } catch (e) {
+                alert('Connection failure while rejecting complaint.');
+            }
+        }
+
+        // Clear JWT on logout
+        function logout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            window.location.href = 'index.html';
+        }
+
+        // Image lightbox handlers
+        function openImagePreview(imageUrl) {
+            document.getElementById('modalPreviewImage').src = imageUrl;
+            const modal = document.getElementById('imagePreviewModal');
+            modal.style.display = 'flex';
+        }
+
+        function closeImagePreview() {
+            const modal = document.getElementById('imagePreviewModal');
+            modal.style.display = 'none';
+            document.getElementById('modalPreviewImage').src = '';
+        }
+
+        // Initialize script
+        init();
+    </script>
+
+    <!-- Photo Lightbox Modal -->
+    <div class="receipt-preview-modal" id="imagePreviewModal" onclick="closeImagePreview()" style="display:none; position:fixed; inset:0; background:rgba(15,23,42,0.75); z-index:1000; align-items:center; justify-content:center; padding:24px; cursor:zoom-out;">
+        <img id="modalPreviewImage" src="" alt="Full preview" style="max-width:90vw; max-height:90vh; border-radius:8px; background:#fff; box-shadow: 0 4px 20px rgba(0,0,0,0.3);">
+    </div>
+    <script src="auth-nav.js"></script>
+</body>
+</html>

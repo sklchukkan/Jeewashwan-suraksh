@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard | Overview</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <!-- Material Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
+    <!-- Base Stylesheet -->
+    <link rel="stylesheet" href="style.css">
+    
+    <style>
+        :root {
+            --sidebar-width: 260px;
+            --color-sidebar-bg: #1e293b;
+            --color-sidebar-hover: #334155;
+            --color-active-link: #3b82f6;
+        }
+
+        body {
+            display: flex;
+            background-color: #f8fafc;
+            min-height: 100vh;
+            font-family: var(--font-body);
+        }
+
+        /* Sidebar Styling */
+        .sidebar {
+            width: var(--sidebar-width);
+            background-color: var(--color-sidebar-bg);
+            color: #f8fafc;
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            display: flex;
+            flex-direction: column;
+            padding: 24px;
+            z-index: 100;
+        }
+
+        .sidebar-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-family: var(--font-heading);
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: #3b82f6;
+            margin-bottom: 40px;
+        }
+
+        .sidebar-logo span {
+            color: #ef4444;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            flex: 1;
+        }
+
+        .sidebar-menu-item a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            border-radius: var(--radius-sm);
+            color: #94a3b8;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+
+        .sidebar-menu-item a:hover {
+            background-color: var(--color-sidebar-hover);
+            color: #f8fafc;
+        }
+
+        .sidebar-menu-item.active a {
+            background-color: var(--color-active-link);
+            color: #ffffff;
+        }
+
+        .sidebar-footer {
+            margin-top: auto;
+        }
+
+        /* Main Content Container */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            flex: 1;
+            padding: 40px;
+            overflow-y: auto;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .stat-card {
+            background: #ffffff;
+            border-radius: var(--radius-sm);
+            padding: 24px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border: 1px solid #f1f5f9;
+        }
+
+        .stat-info h3 {
+            font-size: 0.875rem;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 4px;
+        }
+
+        .stat-info p {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #1e293b;
+        }
+
+        .stat-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .stat-icon.blue { background-color: #eff6ff; color: #3b82f6; }
+        .stat-icon.orange { background-color: #fff7ed; color: #f97316; }
+        .stat-icon.green { background-color: #f0fdf4; color: #22c55e; }
+
+        /* Welcome & Action Banner */
+        .banner {
+            background: linear-gradient(135deg, #1e3a8a, #3b82f6);
+            color: white;
+            padding: 30px;
+            border-radius: var(--radius-sm);
+            margin-bottom: 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: var(--shadow-md);
+        }
+
+        .banner-content h3 {
+            font-size: 1.5rem;
+            color: white;
+            margin-bottom: 8px;
+        }
+
+        .banner-content p {
+            color: #bfdbfe;
+            font-size: 0.95rem;
+        }
+
+        /* Recent Activity / Receipts Panel */
+        .data-card {
+            background: #ffffff;
+            border-radius: var(--radius-sm);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            border: 1px solid #f1f5f9;
+            padding: 24px;
+        }
+
+        .data-card h3 {
+            font-size: 1.15rem;
+            color: #1e293b;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .receipts-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .receipts-table th, .receipts-table td {
+            text-align: left;
+            padding: 14px 16px;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .receipts-table th {
+            font-weight: 600;
+            color: #64748b;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+        }
+
+        .receipts-table td {
+            color: #334155;
+            font-size: 0.95rem;
+        }
+
+        .receipts-table tr:hover {
+            background-color: #f8fafc;
+        }
+
+        .receipt-thumb {
+            max-width: 120px;
+            max-height: 80px;
+            border-radius: 6px;
+            border: 1px solid #e2e8f0;
+            object-fit: cover;
+            cursor: pointer;
+        }
+
+        .receipt-preview-modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.75);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+        }
+
+        .receipt-preview-modal.active {
+            display: flex;
+        }
+
+        .receipt-preview-modal img {
+            max-width: 90vw;
+            max-height: 90vh;
+            border-radius: 8px;
+            background: #fff;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-logo">
+            <span class="material-icons-outlined">pets</span>
+            Jeevashwan Admin
+        </div>
+        <ul class="sidebar-menu">
+            <li class="sidebar-menu-item active">
+                <a href="dashboard-admin.html">
+                    <span class="material-icons-outlined">dashboard</span>
+                    Dashboard
+                </a>
+            </li>
+            <li class="sidebar-menu-item">
+                <a href="admin-complaints.html">
+                    <span class="material-icons-outlined">report_problem</span>
+                    Manage Complaints
+                </a>
+            </li>
+        </ul>
+        <div class="sidebar-footer">
+            <li class="sidebar-menu-item" style="list-style: none; margin-bottom: 10px;">
+                <a href="#" onclick="openProfileModal(); return false;">
+                    <span class="material-icons-outlined">account_circle</span>
+                    Profile
+                </a>
+            </li>
+            <li class="sidebar-menu-item" style="list-style: none;">
+                <a href="#" onclick="logout()">
+                    <span class="material-icons-outlined">logout</span>
+                    Logout
+                </a>
+            </li>
+        </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+            <h2>Dashboard Overview</h2>
+            <div style="font-size: 0.95rem; color:#64748b;">Role: <strong>Administrator</strong></div>
+        </div>
+
+        <!-- Banner -->
+        <div class="banner">
+            <div class="banner-content">
+                <h3>Welcome back, Administrator</h3>
+                <p>Monitor complaints reported by local users, track stray dog statuses, and manage NGO payouts.</p>
+            </div>
+            <a href="admin-complaints.html" class="btn btn-outline-white" style="color: white; border-color: white;">
+                <span class="material-icons-outlined">assignment</span> Review Complaints
+            </a>
+        </div>
+
+        <!-- Stats Grid -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-info">
+                    <h3>Total Complaints</h3>
+                    <p id="totalComplaints">0</p>
+                </div>
+                <div class="stat-icon blue">
+                    <span class="material-icons-outlined">description</span>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-info">
+                    <h3>Active NGOs</h3>
+                    <p id="totalNgos">0</p>
+                </div>
+                <div class="stat-icon orange">
+                    <span class="material-icons-outlined">people_alt</span>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-info">
+                    <h3>Total Payouts</h3>
+                    <p id="totalPayouts">₹0</p>
+                </div>
+                <div class="stat-icon green">
+                    <span class="material-icons-outlined">payments</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- NGO Receipts Card -->
+        <div class="data-card">
+            <h3>
+                <span class="material-icons-outlined" style="color:#22c55e;">receipt_long</span>
+                Submitted NGO Receipts
+            </h3>
+            <table class="receipts-table">
+                <thead>
+                    <tr>
+                        <th>Receipt ID</th>
+                        <th>NGO Partner</th>
+                        <th>Amount Paid</th>
+                        <th>Upload Date</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="receiptsList">
+                    <!-- Dynamic receipts will go here -->
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <div class="receipt-preview-modal" id="receiptPreviewModal" onclick="closeReceiptPreview()">
+        <img id="receiptPreviewImage" src="" alt="Receipt preview">
+    </div>
+
+    <script>
+        const token = localStorage.getItem('token');
+        if (!token) window.location.href = 'login.html';
+
+        async function loadOverviewData() {
+            const h = { 'Authorization': 'Bearer ' + token };
+            
+            try {
+                // Get complaints count
+                const resC = await fetch('/api/admin/reports', { headers: h });
+                const reports = resC.ok ? await resC.json() : [];
+                document.getElementById('totalComplaints').innerText = reports.length;
+
+                // Get NGOs count
+                const resN = await fetch('/api/admin/ngos', { headers: h });
+                const ngos = resN.ok ? await resN.json() : [];
+                document.getElementById('totalNgos').innerText = ngos.length;
+
+                // Get Receipts & Payouts
+                const resR = await fetch('/api/admin/receipts', { headers: h });
+                const recs = resR.ok ? await resR.json() : [];
+                
+                const tableBody = document.getElementById('receiptsList');
+                tableBody.innerHTML = '';
+
+                let totalPayout = 0;
+
+                if (recs.length === 0) {
+                    tableBody.innerHTML = `
+                        <tr>
+                            <td colspan="5" style="text-align:center; color:#94a3b8; padding:30px;">
+                                No receipts uploaded yet.
+                            </td>
+                        </tr>
+                    `;
+                } else {
+                    recs.forEach(r => {
+                        totalPayout += (r.amount || 0);
+                        const dateStr = r.uploaded_at ? new Date(r.uploaded_at).toLocaleDateString() : 'N/A';
+
+                        let actionCell = '';
+                        if (r.has_image) {
+                            const imageUrl = `/api/receipts/${r.id}/image?token=${encodeURIComponent(token)}`;
+                            actionCell = `
+                                <img src="${imageUrl}" class="receipt-thumb" alt="Receipt #${r.id}"
+                                     onclick="openReceiptPreview('${imageUrl}')" title="Click to enlarge">
+                            `;
+                        } else if (r.file_url) {
+                            actionCell = `
+                                <a href="${r.file_url}" target="_blank" class="btn btn-outline" style="padding:6px 12px; font-size:0.85rem;">
+                                    <span class="material-icons-outlined" style="font-size:1.1rem;">visibility</span> View Receipt
+                                </a>
+                            `;
+                        } else {
+                            actionCell = '<span style="color:#94a3b8;">No image</span>';
+                        }
+
+                        tableBody.innerHTML += `
+                            <tr>
+                                <td><strong>#${r.id}</strong></td>
+                                <td>${r.ngo_name}</td>
+                                <td><strong>₹${r.amount}</strong></td>
+                                <td>${dateStr}</td>
+                                <td>${actionCell}</td>
+                            </tr>
+                        `;
+                    });
+                }
+
+                document.getElementById('totalPayouts').innerText = '₹' + totalPayout.toLocaleString();
+
+            } catch (err) {
+                console.error("Error loading Overview stats:", err);
+            }
+        }
+
+        loadOverviewData();
+
+        function openReceiptPreview(imageUrl) {
+            document.getElementById('receiptPreviewImage').src = imageUrl;
+            document.getElementById('receiptPreviewModal').classList.add('active');
+        }
+
+        function closeReceiptPreview() {
+            document.getElementById('receiptPreviewModal').classList.remove('active');
+            document.getElementById('receiptPreviewImage').src = '';
+        }
+
+        function logout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            window.location.href = 'index.html';
+        }
+    </script>
+    <script src="auth-nav.js"></script>
+</body>
+</html>

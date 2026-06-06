@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Login | Jeevashwan Surakhsh</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
+</head>
+
+<body style="background-color: var(--color-bg);">
+    <nav id="navbar" class="scrolled">
+        <div class="nav-container">
+            <div class="logo">
+                <a href="index.html" style="text-decoration:none; color:inherit; display:flex; align-items:center;">
+                    <span class="material-icons-outlined logo-icon">pets</span>
+                    <span>Jeevashwan Surakhsh</span>
+                </a>
+            </div>
+        </div>
+    </nav>
+    <div style="display:flex; justify-content:center; padding:120px 20px;">
+        <div class="feature-card" style="width:100%; max-width:400px; text-align:left;">
+            <h2 style="margin-bottom:20px; color: var(--color-dark);">Login</h2>
+            <form id="loginForm">
+                <div style="margin-bottom:15px;">
+                    <label style="color: var(--color-gray);">Username</label>
+                    <input type="text" id="username" required
+                        style="width:100%; padding:10px; margin-top:5px; border-radius:8px; border:1px solid #ccc; font-family:inherit;">
+                </div>
+                <div style="margin-bottom:20px;">
+                    <label style="color: var(--color-gray);">Password</label>
+                    <input type="password" id="password" required
+                        style="width:100%; padding:10px; margin-top:5px; border-radius:8px; border:1px solid #ccc; font-family:inherit;">
+                </div>
+                <button type="submit" class="btn btn-primary full-width">Login</button>
+                <div id="loginError" style="color:red; margin-top:10px; display:none;"></div>
+            </form>
+            <p style="margin-top:20px; text-align:center; color: var(--color-gray);">Don't have an account? <a
+                    href="register.html" style="color: var(--color-primary); font-weight: 500;">Register</a></p>
+        </div>
+    </div>
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            try {
+                console.log("Attempting to login:", username);
+                if (window.location.protocol === 'file:') {
+                    throw new Error('You are opening this file directly. Please use http://localhost:3000 instead.');
+                }
+                const res = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    localStorage.setItem('token', data.token);
+                    localStorage.setItem('user', JSON.stringify(data.user));
+                    if (data.user.role === 'admin') window.location.href = 'dashboard-admin.html';
+                    else if (data.user.role === 'ngo') window.location.href = 'dashboard-ngo.html';
+                    else window.location.href = 'dashboard-user.html';
+                } else {
+                    document.getElementById('loginError').innerText = data.error || 'Login failed.';
+                    document.getElementById('loginError').style.display = 'block';
+                }
+            } catch (err) {
+                console.error("Login error:", err);
+                document.getElementById('loginError').innerText = err.message || 'Server connection failed.';
+                document.getElementById('loginError').style.display = 'block';
+            }
+        });
+    </script>
+</body>
+
+</html>

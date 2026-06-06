@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>User Dashboard | Jeevashwan Surakhsh</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
+    <style>
+        .reports-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 24px;
+            margin-top: 20px;
+        }
+        .report-card {
+            background-color: var(--color-white);
+            border-radius: var(--radius-md);
+            padding: 24px;
+            border: 1px solid #f1f5f9;
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .report-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-md);
+            border-color: #cbd5e1;
+        }
+        .status-pill {
+            display: inline-block;
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 999px;
+            text-transform: uppercase;
+        }
+        .status-pill.pending { background-color: #fef9c3; color: #854d0e; }
+        .status-pill.assigned { background-color: #ffedd5; color: #9a3412; }
+        .status-pill.completed { background-color: #dcfce7; color: #166534; }
+        .status-pill.rejected { background-color: #fee2e2; color: #991b1b; }
+    </style>
+</head>
+<body style="background-color: var(--color-bg-main);">
+    <nav class="scrolled">
+        <div class="nav-container">
+            <div class="logo">
+                <span class="material-icons-outlined logo-icon">pets</span>
+                <span>Jeevashwan Surakhsh</span>
+            </div>
+            <div class="nav-actions">
+                <button onclick="logout()" class="btn btn-outline">Logout</button>
+            </div>
+        </div>
+    </nav>
+    <div class="container" style="padding-top:120px; padding-bottom: 60px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 16px;">
+            <h2>My Dashboard</h2>
+            <div style="display: flex; gap: 12px;">
+                <a href="report.html" class="btn btn-primary">
+                    <span class="material-icons-outlined">add_alert</span> Report a New Stray Dog
+                </a>
+                <a href="index.html" class="btn btn-outline" style="display: inline-flex; align-items: center; gap: 6px;">
+                    <span class="material-icons-outlined">home</span> Back to Homepage
+                </a>
+            </div>
+        </div>
+
+        <div class="feature-card" style="margin-top:20px; text-align: left; padding: 30px;">
+            <h3 style="border-bottom: 1px solid #f1f5f9; padding-bottom: 12px; margin-bottom: 20px; display: flex; align-items: center; gap: 8px;">
+                <span class="material-icons-outlined" style="color: var(--color-primary);">assignment</span> My Sighting Reports
+            </h3>
+            <div id="userReportsGrid" class="reports-grid">
+                <!-- Dynamically filled -->
+            </div>
+            <div id="noReportsMessage" style="display: none; text-align: center; padding: 40px; color: var(--color-text-muted);">
+                <span class="material-icons-outlined" style="font-size: 3rem; margin-bottom: 12px;">content_paste_off</span>
+                <p>You haven't reported any stray dogs yet.</p>
+            </div>
+        </div>
+    </div>
+    <script>
+        const token = localStorage.getItem('token');
+        if (!token) window.location.href = 'login.html';
+
+        async function loadReports() {
+            const grid = document.getElementById('userReportsGrid');
+            const noMsg = document.getElementById('noReportsMessage');
+            try {
+                const res = await fetch('/api/reports/me', {
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+                if (res.ok) {
+                    const data = await res.json();
+                    grid.innerHTML = '';
+                    if (data.length === 0) {
+                        noMsg.style.display = 'block';
+                        return;
+                    }
+                    noMsg.style.display = 'none';
+                    data.forEach(r => {
+                        const statusClass = r.status.toLowerCase();
+                        const dateStr = new Date(r.created_at).toLocaleString();
+                        const imageHtml = r.has_image === 1 
+                            ? `<div style="height: 180px; overflow: hidden; border-radius: 8px; margin-bottom: 12px; border: 1px solid #e2e8f0; background: #f8fafc; display: flex; align-items: center; justify-content: center;">
+                                 <img src="/api/reports/${r.id}/image?token=${encodeURIComponent(token)}" alt="Sighting photo" style="max-height: 100%; max-width: 100%; object-fit: contain;">
+                               </div>` 
+                            : `<div style="height: 180px; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #f1f5f9; color: #94a3b8; border-radius: 8px; margin-bottom: 12px; border: 1px dashed #cbd5e1;">
+                                 <span class="material-icons-outlined" style="font-size: 2.2rem;">image_not_supported</span>
+                                 <span style="font-size: 0.8rem; margin-top: 4px;">No image uploaded</span>
+                               </div>`;
+
+                        grid.innerHTML += `
+                            <div class="report-card">
+                                <div>
+                                    ${imageHtml}
+                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                                        <span class="status-pill ${statusClass}">${r.status}</span>
+                                        <span style="font-size: 0.78rem; color: #94a3b8;">${dateStr}</span>
+                                    </div>
+                                    <h4 style="margin: 0 0 6px 0; font-size: 1.1rem; color: var(--color-text-main); font-weight: 700;">${r.area_name || 'Kottayam Municipality'}</h4>
+                                    <p style="margin: 0 0 6px 0; font-size: 0.88rem; color: var(--color-text-muted);"><strong>Landmark:</strong> ${r.landmark || 'N/A'}</p>
+                                    <p style="margin: 0 0 8px 0; font-size: 0.88rem; color: var(--color-text-muted);"><strong>Dogs Sighted:</strong> ${r.dog_count} · <strong>Behavior:</strong> ${r.behavior}</p>
+                                    <div style="background: #f8fafc; padding: 10px; border-radius: 6px; border: 1px solid #e2e8f0; font-size: 0.85rem; color: #334155; max-height: 90px; overflow-y: auto;">
+                                        ${r.description || 'No description provided.'}
+                                    </div>
+                                    ${r.reject_reason ? `
+                                    <div style="margin-top: 10px; background: #fee2e2; border: 1px solid #fca5a5; padding: 8px; border-radius: 6px; font-size: 0.82rem; color: #991b1b;">
+                                        <strong>Rejection Reason:</strong> ${r.reject_reason}
+                                    </div>` : ''}
+                                </div>
+                            </div>
+                        `;
+                    });
+                }
+            } catch (err) {
+                console.error("Error loading user reports:", err);
+                grid.innerHTML = '<p style="color:red; text-align:center;">Failed to load sighting reports.</p>';
+            }
+        }
+        loadReports();
+
+        function logout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            window.location.href = 'index.html';
+        }
+    </script>
+    <script src="auth-nav.js"></script>
+</body>
+</html>

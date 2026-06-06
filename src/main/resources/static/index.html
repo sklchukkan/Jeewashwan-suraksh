@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jeevashwan Surakhsh | Stray Dog Monitoring & Safety</title>
+    <!-- Google Fonts -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@400;500;600&display=swap"
+        rel="stylesheet">
+    <!-- Material Symbols Outlined -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
+    <!-- Local CSS -->
+    <link rel="stylesheet" href="style.css">
+
+    <meta name="description"
+        content="A smart platform to monitor, report, and care for stray dogs in your city. Ensuring community safety and protecting stray lives.">
+</head>
+
+<body>
+
+    <!-- Navigation Bar -->
+    <nav id="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <span class="material-icons-outlined logo-icon">pets</span>
+                <span>Jeevashwan Surakhsh</span>
+            </div>
+            <div class="nav-links">
+                <a href="report.html">Report Stray Dog</a>
+                <a href="map.html">Monitoring Map</a>
+                <a href="#alerts">Community Alerts</a>
+            </div>
+            <div class="nav-actions">
+                <a href="login.html" class="btn btn-outline" id="navLoginBtn">Login</a>
+                <a href="register.html" class="btn btn-primary" id="navRegisterBtn">Register</a>
+            </div>
+            <div class="mobile-menu-toggle">
+                <span class="material-icons-outlined">menu</span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <header class="hero" id="home">
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+            <span class="badge">Community First</span>
+            <h1>Protecting Stray Lives,<br>Ensuring Community Safety</h1>
+            <p>A smart platform to monitor, report, and care for stray dogs in your city.</p>
+            <div class="hero-buttons">
+                <a href="report.html" class="btn btn-primary btn-large">
+                    <span class="material-icons-outlined">add_alert</span>
+                    Report a Stray Dog
+                </a>
+                <a href="map.html" class="btn btn-secondary btn-large">
+                    <span class="material-icons-outlined">map</span>
+                    View Monitoring Map
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Features Section -->
+    <section class="features" id="features">
+        <div class="container">
+            <div class="section-title">
+                <h2>Our Core Features</h2>
+                <p>Comprehensive tools for a safer neighborhood and better care.</p>
+            </div>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <div class="icon-wrapper primary-light">
+                        <span class="material-icons-outlined">report</span>
+                    </div>
+                    <h3>Stray Dog Reporting</h3>
+                    <p>Citizens can report stray dogs in their area with precise geolocation and photos for quick
+                        response.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="icon-wrapper secondary-light">
+                        <span class="material-icons-outlined">location_on</span>
+                    </div>
+                    <h3>Live Monitoring Map</h3>
+                    <p>Track reported and verified stray dog locations across the city in real-time to ensure safety.
+                    </p>
+                </div>
+                <div class="feature-card">
+                    <div class="icon-wrapper primary-light">
+                        <span class="material-icons-outlined">medical_services</span>
+                    </div>
+                    <h3>Health & Vaccination</h3>
+                    <p>Monitor vaccination drives, sterilization records, and overall health status of reported dogs.
+                    </p>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works Section -->
+    <section class="how-it-works" id="how-it-works">
+        <div class="container">
+            <div class="section-title">
+                <h2>How It Works</h2>
+                <p>Simple steps to make a huge impact in your community.</p>
+            </div>
+            <div class="steps-container">
+                <div class="step-card">
+                    <div class="step-number">1</div>
+                    <span class="material-icons-outlined step-icon">add_a_photo</span>
+                    <h3>Report Stray Dogs</h3>
+                    <p>Use our portal to snap a picture and tag the location of the stray dog.</p>
+                </div>
+                <div class="step-connector"></div>
+                <div class="step-card">
+                    <div class="step-number">2</div>
+                    <span class="material-icons-outlined step-icon">verified_user</span>
+                    <h3>Authorities Verify</h3>
+                    <p>Local authorities and trained volunteers verify the report in real life.</p>
+                </div>
+                <div class="step-connector"></div>
+                <div class="step-card">
+                    <div class="step-number">3</div>
+                    <span class="material-icons-outlined step-icon">volunteer_activism</span>
+                    <h3>Action Taken</h3>
+                    <p>Dogs are safely monitored, vaccinated, or rescued to shelters.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Statistics Section -->
+    <section class="statistics" id="stats">
+        <div class="container">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <span class="material-icons-outlined stat-icon">pets</span>
+                    <h3 class="counter" id="casesReportedCounter" data-target="0">0</h3>
+                    <p>Cases Reported</p>
+                </div>
+                <div class="stat-card">
+                    <span class="material-icons-outlined stat-icon">vaccines</span>
+                    <h3 class="counter" id="casesCompletedCounter" data-target="0">0</h3>
+                    <p>Cases Completed</p>
+                </div>
+
+                <div class="stat-card">
+                    <span class="material-icons-outlined stat-icon">group</span>
+                    <h3 class="counter" id="activeVolunteersCounter" data-target="0">0</h3>
+                    <p>Active Volunteers</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Community Alerts Section -->
+    <section class="alerts" id="alerts">
+        <div class="container">
+            <div class="section-title">
+                <h2>Community Alerts</h2>
+                <p>Stay updated on incidents, safety drives, and local updates.</p>
+            </div>
+            <div class="alerts-grid" id="alerts-container">
+                <!-- Alerts will be injected here via JS -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Call to Action -->
+    <section class="cta-section">
+        <div class="container cta-container">
+            <h2>Join us in protecting stray dogs and making cities safer.</h2>
+            <p>Whether you want to report an incident or spend your time helping animals, your participation makes a
+                world of difference.</p>
+            <div class="cta-actions">
+                <a href="report.html" class="btn btn-outline-white btn-large">Report Now</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container footer-grid">
+            <div class="footer-about">
+                <div class="logo footer-logo">
+                    <span class="material-icons-outlined logo-icon">pets</span>
+                    <span>Jeevashwan Surakhsh</span>
+                </div>
+                <p>A smart platform to monitor, report, and care for stray dogs in your city ensuring safety and welfare
+                    for all.</p>
+                <div class="social-links">
+                    <a href="#"><span class="material-icons-outlined">facebook</span></a>
+                    <a href="#"><span class="material-icons-outlined">language</span></a>
+                    <!-- Website icon as placeholder for generic socials -->
+                    <a href="#"><span class="material-icons-outlined">share</span></a>
+                </div>
+            </div>
+            <div class="footer-links">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="#home">Home</a></li>
+                    <li><a href="report.html">Report a Dog</a></li>
+                    <li><a href="map.html">Monitoring Map</a></li>
+                </ul>
+            </div>
+            <div class="footer-links">
+                <h3>Legal</h3>
+                <ul>
+                    <li><a href="#privacy">Privacy Policy</a></li>
+                    <li><a href="#terms">Terms of Service</a></li>
+                    <li><a href="#guidelines">Community Guidelines</a></li>
+                </ul>
+            </div>
+            <div class="footer-contact">
+                <h3>Contact</h3>
+                <p>Email: support@jeevashwan.org</p>
+                <p>Helpline: 1800-456-7890</p>
+                <p>HQ Location: New Delhi, India</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 Jeevashwan Surakhsh. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- App Logic -->
+    <script src="auth-nav.js"></script>
+    <script src="script.js"></script>
+</body>
+
+</html>

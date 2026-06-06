@@ -1,0 +1,104 @@
+
+# =========================
+# Node.js
+# =========================
+node_modules/
+
+# =========================
+# Environment Variables
+# =========================
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# =========================
+# Logs
+# =========================
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# =========================
+# SQLite Database
+# =========================
+database.sqlite
+database.sqlite-journal
+database.sqlite-shm
+database.sqlite-wal
+
+# =========================
+# Maven / Spring Boot
+# =========================
+target/
+
+# =========================
+# IDE Files
+# =========================
+.vscode/
+.idea/
+*.iml
+
+# =========================
+# Local Maven Download
+# =========================
+apache-maven-3.9.6/
+maven.zip
+
+# =========================
+# OS Files
+# =========================
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# =========================
+# Temporary Files
+# =========================
+*.tmp
+*.temp
+
+
+
+
+
+
+
+
+
+
+
+
+# old git files
+
+
+
+# # Node modules
+# node_modules/
+
+# # Environment variables
+# .env
+# .env.local
+# .env.development.local
+# .env.test.local
+# .env.production.local
+
+# # Logs
+# logs
+# *.log
+# npm-debug.log*
+# yarn-debug.log*
+# yarn-error.log*
+
+# # Database (optional but recommended to keep out of Git)
+# database.sqlite
+# database.sqlite-journal
+# database.sqlite-shm
+# database.sqlite-wal
+
+# # OS files
+# .DS_Store
+# Thumbs.db

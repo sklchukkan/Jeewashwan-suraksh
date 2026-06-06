@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stray Dog Monitoring Map - Kottayam District | Jeevashwan Surakhsh</title>
+    <!-- Global error catcher for screen debugging -->
+    <script>
+        window.addEventListener('error', function(e) {
+            console.error("Global Error Boundary Caught:", e);
+            setTimeout(() => {
+                const notice = document.getElementById('api-notice');
+                const loader = document.getElementById('map-loader');
+                if (loader) loader.classList.add('hidden');
+                if (notice) {
+                    notice.style.display = 'flex';
+                    notice.style.backgroundColor = '#ef4444';
+                    notice.style.color = '#ffffff';
+                    notice.innerHTML = `<span class="material-icons-outlined" style="margin-right:8px;">error</span> <span>Error: ${e.message} (Line ${e.lineno}:${e.colno} in ${e.filename ? e.filename.split('/').pop() : 'script'})</span>`;
+                }
+            }, 100);
+        });
+    </script>
+    <!-- Google Fonts -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@400;500;600&display=swap"
+        rel="stylesheet">
+    <!-- Material Symbols Outlined -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
+    <!-- Component CSS -->
+    <link rel="stylesheet" href="map-style.css">
+
+    <!-- Turf.js for GeoJSON boundary partitioning and point-in-polygon checks -->
+    <script src="https://cdn.jsdelivr.net/npm/@turf/turf@6/turf.min.js"></script>
+
+    <!-- Leaflet JS & CSS from CDN -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+</head>
+
+<body>
+
+    <div class="map-dashboard">
+
+        <!-- Header Section -->
+        <header class="dashboard-header">
+            <div class="header-content">
+                <div class="logo">
+                    <span class="material-icons-outlined logo-icon">pets</span>
+                    <h2>Jeevashwan Surakhsh</h2>
+                </div>
+                <h1>Stray Dog Monitoring Map - Kottayam District</h1>
+                <a href="index.html" class="btn-back">
+                    <span class="material-icons-outlined">arrow_back</span>
+                    Back to Home
+                </a>
+            </div>
+        </header>
+
+        <!-- Main Dashboard Area -->
+        <div class="dashboard-body">
+
+            <!-- Left Panel: Filters & Info -->
+            <aside class="sidebar-panel">
+                <div class="panel-section">
+                    <h3>Map Filters</h3>
+                    <p class="panel-desc">Toggle the visibility of specific risk zones across the district wards.</p>
+
+                    <div class="filter-group">
+                        <label class="filter-option zone-red">
+                            <input type="checkbox" id="filter-red" checked>
+                            <span class="custom-checkbox"></span>
+                            <div class="filter-label">
+                                <span class="material-icons-outlined zone-icon">warning</span>
+                                <div>
+                                    <strong>Red Zones (High Risk)</strong>
+                                    <span>Wards with > 6 assigned reports</span>
+                                </div>
+                            </div>
+                        </label>
+
+                        <label class="filter-option zone-orange">
+                            <input type="checkbox" id="filter-orange" checked>
+                            <span class="custom-checkbox"></span>
+                            <div class="filter-label">
+                                <span class="material-icons-outlined zone-icon">error_outline</span>
+                                <div>
+                                    <strong>Orange Zones (Moderate)</strong>
+                                    <span>Wards with 3 to 6 assigned reports</span>
+                                </div>
+                            </div>
+                        </label>
+
+                        <label class="filter-option zone-green">
+                            <input type="checkbox" id="filter-green" checked>
+                            <span class="custom-checkbox"></span>
+                            <div class="filter-label">
+                                <span class="material-icons-outlined zone-icon">verified_user</span>
+                                <div>
+                                    <strong>Green Zones (Low Risk)</strong>
+                                    <span>Wards with 1 to 2 assigned reports</span>
+                                </div>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="panel-section">
+                    <h3>Real-time Status</h3>
+                    <div class="status-stats">
+                        <div class="stat-item">
+                            <span class="stat-value" id="total-reports">0</span>
+                            <span class="stat-label">Total Assigned Reports</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-value" id="active-red-zones">0</span>
+                            <span class="stat-label">High Risk Wards (Red)</span>
+                        </div>
+                    </div>
+                    <button class="btn-primary full-width" onclick="fetchMapData()">
+                        <span class="material-icons-outlined">refresh</span>
+                        Refresh Data
+                    </button>
+                    <p class="api-note">Connected to SQLite Database: <br><code>/api/public-map-data</code></p>
+                </div>
+
+                <div class="panel-section">
+                    <h3>Municipality Wards</h3>
+                    <p class="panel-desc">Select a ward to view active reports and locate it on the map.</p>
+                    <div class="ward-search-wrapper" style="margin-bottom: 12px; position: relative;">
+                        <span class="material-icons-outlined" style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: var(--color-text-muted); font-size: 1.1rem; pointer-events: none;">search</span>
+                        <input type="text" id="ward-search-input" placeholder="Search ward name or number..." oninput="filterWardList()" style="width: 100%; padding: 8px 12px 8px 32px; border-radius: var(--radius-md); border: 1px solid var(--color-border); font-family: var(--font-body); font-size: 0.85rem; outline: none; transition: border-color 0.2s;">
+                    </div>
+                    <div class="ward-list-container" id="ward-list" style="display: flex; flex-direction: column; gap: 8px; padding-right: 4px;">
+                        <!-- Wards will be dynamically injected here -->
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Right Panel: Map Container -->
+            <main class="map-container">
+                <!-- Loading Overlay -->
+                <div id="map-loader" class="loader-overlay">
+                    <div class="spinner"></div>
+                    <p>Loading Kottayam Municipality Ward Map Data...</p>
+                </div>
+
+                <!-- Actual Map Div (Used for Google Map or Leaflet Fallback) -->
+                <div id="google-map" style="width: 100%; height: 100%;"></div>
+
+            </main>
+
+        </div>
+    </div>
+
+    <!-- Map Logic Script -->
+    <script src="auth-nav.js"></script>
+    <script src="map-script.js"></script>
+
+    <!-- Initialize Map on DOM Content Loaded -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            if (typeof initMap === 'function') initMap();
+        });
+    </script>
+</body>
+
+</html>
