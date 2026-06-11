@@ -175,6 +175,18 @@
             color: var(--color-primary-dark);
         }
 
+        .error-message {
+            color: var(--color-alert-red);
+            font-size: 0.8rem;
+            margin-top: 4px;
+            display: none;
+        }
+
+        .form-control.invalid {
+            border-color: var(--color-alert-red);
+            box-shadow: 0 0 0 3px var(--color-secondary-light);
+        }
+
         /* Mock Map Placeholder styling */
         .mock-map {
             width: 100%;
@@ -265,12 +277,14 @@
                             <label class="form-label" for="reporterPhone">Phone Number <span
                                     class="req">*</span></label>
                             <input type="tel" id="reporterPhone" name="phone" class="form-control" required
-                                placeholder="9876543210" pattern="[0-9]{10}">
+                                placeholder="9876543210">
+                            <div class="error-message" id="phoneError">Please enter a valid mobile number.</div>
                         </div>
                         <div class="form-group">
                             <label class="form-label" for="reporterEmail">Email Address</label>
                             <input type="email" id="reporterEmail" name="email" class="form-control"
                                 placeholder="example@email.com">
+                            <div class="error-message" id="emailError">Please enter a valid email address.</div>
                         </div>
                     </div>
 

@@ -153,11 +153,55 @@ document.addEventListener('DOMContentLoaded', () => {
         previewImage.src = '';
     });
 
+    // Clear validation errors on input
+    document.getElementById('reporterPhone').addEventListener('input', () => {
+        document.getElementById('reporterPhone').classList.remove('invalid');
+        document.getElementById('phoneError').style.display = 'none';
+    });
+    document.getElementById('reporterEmail').addEventListener('input', () => {
+        document.getElementById('reporterEmail').classList.remove('invalid');
+        document.getElementById('emailError').style.display = 'none';
+    });
+
     // Handle Form Submit
     const reportForm = document.getElementById('reportForm');
 
     reportForm.addEventListener('submit', (e) => {
         e.preventDefault();
+
+        // Clear previous error styles
+        document.getElementById('reporterPhone').classList.remove('invalid');
+        document.getElementById('phoneError').style.display = 'none';
+        document.getElementById('reporterEmail').classList.remove('invalid');
+        document.getElementById('emailError').style.display = 'none';
+
+        let isValid = true;
+
+        // Validate Phone (digits only, exactly 10 digits)
+        const phoneInput = document.getElementById('reporterPhone');
+        const phone = phoneInput.value.trim();
+        const phoneRegex = /^\d{10}$/;
+        if (!phoneRegex.test(phone)) {
+            phoneInput.classList.add('invalid');
+            document.getElementById('phoneError').style.display = 'block';
+            isValid = false;
+        }
+
+        // Validate Email
+        const emailInput = document.getElementById('reporterEmail');
+        const email = emailInput.value.trim();
+        if (email !== "") {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                emailInput.classList.add('invalid');
+                document.getElementById('emailError').style.display = 'block';
+                isValid = false;
+            }
+        }
+
+        if (!isValid) {
+            return;
+        }
 
         // Validate Map Selection
         const lat = document.getElementById('latitude').value;

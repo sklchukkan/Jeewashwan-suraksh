@@ -8,11 +8,11 @@
     --color-red-zone: #D32F2F;
     --color-red-light: #FFEBEE;
 
-    --color-orange-zone: #F57C00;
+    --color-orange-zone: #E65100;
     --color-orange-light: #FFF3E0;
 
-    --color-green-zone: #388E3C;
-    --color-green-light: #E8F5E9;
+    --color-yellow-zone: #EAB308;
+    --color-yellow-light: #FEFCE8;
 
     --color-bg-main: #F4F7F6;
     --color-surface: #FFFFFF;
@@ -226,23 +226,23 @@ body {
 }
 
 .zone-orange.active {
-    border-color: rgba(245, 124, 0, 0.3);
+    border-color: rgba(230, 81, 0, 0.3);
     background-color: var(--color-orange-light);
 }
 
-.zone-green input:checked+.custom-checkbox {
-    background-color: var(--color-green-zone);
-    border-color: var(--color-green-zone);
+.zone-yellow input:checked+.custom-checkbox {
+    background-color: var(--color-yellow-zone);
+    border-color: var(--color-yellow-zone);
 }
 
-.zone-green .zone-icon {
-    color: var(--color-green-zone);
-    background-color: var(--color-green-light);
+.zone-yellow .zone-icon {
+    color: var(--color-yellow-zone);
+    background-color: var(--color-yellow-light);
 }
 
-.zone-green.active {
-    border-color: rgba(56, 142, 60, 0.3);
-    background-color: var(--color-green-light);
+.zone-yellow.active {
+    border-color: rgba(234, 179, 8, 0.3);
+    background-color: var(--color-yellow-light);
 }
 
 .filter-label {
@@ -421,8 +421,8 @@ body {
     background-color: var(--color-orange-zone);
 }
 
-.info-header.green {
-    background-color: var(--color-green-zone);
+.info-header.yellow {
+    background-color: var(--color-yellow-zone);
 }
 
 .info-header.safe {
@@ -656,5 +656,5 @@ body {
 
 .ward-list-badge.red { background-color: var(--color-red-light); color: var(--color-red-zone); }
 .ward-list-badge.orange { background-color: var(--color-orange-light); color: var(--color-orange-zone); }
-.ward-list-badge.green { background-color: var(--color-green-light); color: var(--color-green-zone); }
+.ward-list-badge.yellow { background-color: var(--color-yellow-light); color: var(--color-yellow-zone); }
 .ward-list-badge.safe { background-color: var(--color-surface); color: var(--color-text-muted); border: 1px dashed var(--color-border); }

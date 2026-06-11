@@ -18,7 +18,7 @@ public class JeevashwanApplication {
     }
 
     @Bean
-    public CommandLineRunner seedDatabase(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public static CommandLineRunner seedDatabase(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         return args -> {
             List<User> admins = userRepository.findByRole("admin");
             if (admins.isEmpty()) {

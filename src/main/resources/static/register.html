@@ -35,26 +35,37 @@
                     <label style="color: var(--color-gray);">Full Name / NGO Name</label>
                     <input type="text" id="name" required
                         style="width:100%; padding:10px; margin-top:5px; border-radius:8px; border:1px solid #ccc; font-family:inherit;">
+                    <div class="field-error" id="nameError" style="color:red; font-size:0.8rem; margin-top:4px; display:none;">Please enter your full name or NGO name.</div>
                 </div>
                 <div style="margin-bottom:15px;">
                     <label style="color: var(--color-gray);">Username</label>
                     <input type="text" id="username" required
                         style="width:100%; padding:10px; margin-top:5px; border-radius:8px; border:1px solid #ccc; font-family:inherit;">
+                    <div class="field-error" id="usernameError" style="color:red; font-size:0.8rem; margin-top:4px; display:none;">Username must be at least 4 characters and contain only letters, numbers, and underscores.</div>
                 </div>
                 <div style="margin-bottom:15px;">
                     <label style="color: var(--color-gray);">Phone Number</label>
                     <input type="text" id="phone" required
                         style="width:100%; padding:10px; margin-top:5px; border-radius:8px; border:1px solid #ccc; font-family:inherit;">
+                    <div class="field-error" id="phoneError" style="color:red; font-size:0.8rem; margin-top:4px; display:none;">Please enter a valid 10-digit mobile number.</div>
                 </div>
                 <div style="margin-bottom:15px;">
-                    <label style="color: var(--color-gray);">Email Address (Optional)</label>
-                    <input type="email" id="email"
+                    <label style="color: var(--color-gray);">Email Address</label>
+                    <input type="email" id="email" required
                         style="width:100%; padding:10px; margin-top:5px; border-radius:8px; border:1px solid #ccc; font-family:inherit;">
+                    <div class="field-error" id="emailError" style="color:red; font-size:0.8rem; margin-top:4px; display:none;">Please enter a valid email address.</div>
                 </div>
-                <div style="margin-bottom:20px;">
+                <div style="margin-bottom:15px;">
                     <label style="color: var(--color-gray);">Password</label>
                     <input type="password" id="password" required
                         style="width:100%; padding:10px; margin-top:5px; border-radius:8px; border:1px solid #ccc; font-family:inherit;">
+                    <div class="field-error" id="passwordError" style="color:red; font-size:0.8rem; margin-top:4px; display:none;">Password must be at least 8 characters and contain at least one uppercase letter, one lowercase letter, one number, and one special character.</div>
+                </div>
+                <div style="margin-bottom:20px;">
+                    <label style="color: var(--color-gray);">Confirm Password</label>
+                    <input type="password" id="confirmPassword" required
+                        style="width:100%; padding:10px; margin-top:5px; border-radius:8px; border:1px solid #ccc; font-family:inherit;">
+                    <div class="field-error" id="confirmPasswordError" style="color:red; font-size:0.8rem; margin-top:4px; display:none;">Passwords do not match.</div>
                 </div>
                 <button type="submit" class="btn btn-primary full-width">Register</button>
                 <div id="registerError" style="color:red; margin-top:10px; display:none;"></div>
@@ -64,16 +75,125 @@
         </div>
     </div>
     <script>
+        // Setup input event listeners to clear error styles dynamically as user types
+        const fields = ['name', 'username', 'phone', 'email', 'password', 'confirmPassword'];
+        fields.forEach(field => {
+            const input = document.getElementById(field);
+            if (input) {
+                input.addEventListener('input', () => {
+                    input.style.borderColor = '#ccc';
+                    const errorEl = document.getElementById(field + 'Error');
+                    if (errorEl) errorEl.style.display = 'none';
+                    document.getElementById('registerError').style.display = 'none';
+                });
+            }
+        });
+
+        // Add blur listener to check username availability on-the-fly
+        const usernameInput = document.getElementById('username');
+        usernameInput.addEventListener('blur', async () => {
+            const username = usernameInput.value.trim();
+            if (username.length >= 4) {
+                try {
+                    const res = await fetch(`/api/auth/check-username?username=${encodeURIComponent(username)}`);
+                    if (res.ok) {
+                        const data = await res.json();
+                        if (!data.available) {
+                            usernameInput.style.borderColor = 'red';
+                            document.getElementById('usernameError').innerText = 'Username is already taken.';
+                            document.getElementById('usernameError').style.display = 'block';
+                        } else {
+                            // Reset style if it was taken but now it is clean
+                            if (document.getElementById('usernameError').innerText === 'Username is already taken.') {
+                                usernameInput.style.borderColor = '#ccc';
+                                document.getElementById('usernameError').style.display = 'none';
+                            }
+                        }
+                    }
+                } catch (err) {
+                    console.error("Error checking username availability:", err);
+                }
+            }
+        });
+
         document.getElementById('registerForm').addEventListener('submit', async (e) => {
             e.preventDefault();
+            
+            // Clear previous error styles
+            let isValid = true;
+            fields.forEach(field => {
+                const input = document.getElementById(field);
+                if (input) input.style.borderColor = '#ccc';
+                const errorEl = document.getElementById(field + 'Error');
+                if (errorEl) errorEl.style.display = 'none';
+            });
+            document.getElementById('registerError').style.display = 'none';
+
+            const name = document.getElementById('name').value.trim();
+            const username = document.getElementById('username').value.trim();
+            const phone = document.getElementById('phone').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+
+            if (name === '') {
+                document.getElementById('name').style.borderColor = 'red';
+                document.getElementById('nameError').style.display = 'block';
+                isValid = false;
+            }
+
+            const usernameRegex = /^[a-zA-Z0-9_]{4,}$/;
+            if (!usernameRegex.test(username)) {
+                document.getElementById('username').style.borderColor = 'red';
+                document.getElementById('usernameError').innerText = 'Username must be at least 4 characters and contain only letters, numbers, and underscores.';
+                document.getElementById('usernameError').style.display = 'block';
+                isValid = false;
+            }
+
+            const phoneRegex = /^\d{10}$/;
+            if (!phoneRegex.test(phone)) {
+                document.getElementById('phone').style.borderColor = 'red';
+                document.getElementById('phoneError').style.display = 'block';
+                isValid = false;
+            }
+
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                document.getElementById('email').style.borderColor = 'red';
+                document.getElementById('emailError').style.display = 'block';
+                isValid = false;
+            }
+
+            const hasUpper = /[A-Z]/.test(password);
+            const hasLower = /[a-z]/.test(password);
+            const hasNumber = /[0-9]/.test(password);
+            const hasSpecial = /[^a-zA-Z0-9]/.test(password);
+            if (password.length < 8 || !hasUpper || !hasLower || !hasNumber || !hasSpecial) {
+                document.getElementById('password').style.borderColor = 'red';
+                document.getElementById('passwordError').style.display = 'block';
+                isValid = false;
+            }
+
+            if (password !== confirmPassword) {
+                document.getElementById('confirmPassword').style.borderColor = 'red';
+                document.getElementById('confirmPasswordError').style.display = 'block';
+                isValid = false;
+            }
+
+            if (!isValid) {
+                return;
+            }
+
             const payload = {
                 role: document.getElementById('role').value,
-                name: document.getElementById('name').value,
-                username: document.getElementById('username').value,
-                phone: document.getElementById('phone').value,
-                email: document.getElementById('email').value,
-                password: document.getElementById('password').value
+                name: name,
+                username: username,
+                phone: phone,
+                email: email,
+                password: password,
+                confirmPassword: confirmPassword
             };
+
             try {
                 console.log("Attempting to register:", payload.username);
                 if (window.location.protocol === 'file:') {
@@ -89,8 +209,14 @@
                     alert('Registration successful! Please login.');
                     window.location.href = 'login.html';
                 } else {
-                    document.getElementById('registerError').innerText = data.details || data.error || 'Registration failed.';
-                    document.getElementById('registerError').style.display = 'block';
+                    if (data.error && data.error.includes('Username already exists')) {
+                        document.getElementById('username').style.borderColor = 'red';
+                        document.getElementById('usernameError').innerText = 'Username is already taken.';
+                        document.getElementById('usernameError').style.display = 'block';
+                    } else {
+                        document.getElementById('registerError').innerText = data.details || data.error || 'Registration failed.';
+                        document.getElementById('registerError').style.display = 'block';
+                    }
                 }
             } catch (err) {
                 console.error("Registration error:", err);

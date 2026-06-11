@@ -33,9 +33,47 @@ public class AuthController {
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
         try {
-            if (request.getName() == null || request.getUsername() == null ||
-                request.getPhone() == null || request.getPassword() == null || request.getRole() == null) {
+            if (request.getName() == null || request.getName().trim().isEmpty() ||
+                request.getUsername() == null || request.getUsername().trim().isEmpty() ||
+                request.getPhone() == null || request.getPhone().trim().isEmpty() ||
+                request.getEmail() == null || request.getEmail().trim().isEmpty() ||
+                request.getPassword() == null || request.getPassword().isEmpty() ||
+                request.getConfirmPassword() == null || request.getConfirmPassword().isEmpty() ||
+                request.getRole() == null || request.getRole().trim().isEmpty()) {
                 return ResponseEntity.badRequest().body(Map.of("error", "All fields are required."));
+            }
+
+            // Username validation
+            String username = request.getUsername().trim();
+            if (username.length() < 4 || !username.matches("^[a-zA-Z0-9_]+$")) {
+                return ResponseEntity.badRequest().body(Map.of("error", "Username must be at least 4 characters and contain only letters, numbers, and underscores."));
+            }
+
+            // Mobile number validation
+            String phone = request.getPhone().trim();
+            if (!phone.matches("^\\d{10}$")) {
+                return ResponseEntity.badRequest().body(Map.of("error", "Please enter a valid 10-digit mobile number."));
+            }
+
+            // Email validation
+            String email = request.getEmail().trim();
+            if (!email.matches("^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}$")) {
+                return ResponseEntity.badRequest().body(Map.of("error", "Please enter a valid email address."));
+            }
+
+            // Password validation
+            String password = request.getPassword();
+            if (password.length() < 8 ||
+                !password.matches(".*[A-Z].*") ||
+                !password.matches(".*[a-z].*") ||
+                !password.matches(".*[0-9].*") ||
+                !password.matches(".*[^a-zA-Z0-9].*")) {
+                return ResponseEntity.badRequest().body(Map.of("error", "Password must be at least 8 characters and contain at least one uppercase letter, one lowercase letter, one number, and one special character."));
+            }
+
+            // Confirm password matching
+            if (!password.equals(request.getConfirmPassword())) {
+                return ResponseEntity.badRequest().body(Map.of("error", "Password and Confirm Password do not match."));
             }
 
             String role = request.getRole().toLowerCase();
@@ -43,17 +81,17 @@ public class AuthController {
                 return ResponseEntity.badRequest().body(Map.of("error", "Invalid role for registration."));
             }
 
-            Optional<User> existingUser = userRepository.findByUsername(request.getUsername());
+            Optional<User> existingUser = userRepository.findByUsername(username);
             if (existingUser.isPresent()) {
                 return ResponseEntity.badRequest().body(Map.of("error", "Username already exists."));
             }
 
-            String hashedPassword = passwordEncoder.encode(request.getPassword());
+            String hashedPassword = passwordEncoder.encode(password);
             User user = new User(
-                request.getName(),
-                request.getUsername(),
-                request.getEmail(), // email (optional)
-                request.getPhone(),
+                request.getName().trim(),
+                username,
+                email,
+                phone,
                 hashedPassword,
                 role
             );
@@ -68,6 +106,20 @@ public class AuthController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(Map.of("error", "Server error during registration.", "details", e.getMessage()));
+        }
+    }
+
+    @GetMapping("/check-username")
+    public ResponseEntity<?> checkUsername(@RequestParam("username") String username) {
+        try {
+            if (username == null || username.trim().isEmpty()) {
+                return ResponseEntity.ok(Map.of("available", true));
+            }
+            boolean exists = userRepository.findByUsername(username.trim()).isPresent();
+            return ResponseEntity.ok(Map.of("available", !exists));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "Server error checking username.", "details", e.getMessage()));
         }
     }
 
@@ -127,6 +179,7 @@ public class AuthController {
         private String email;
         private String phone;
         private String password;
+        private String confirmPassword;
         private String role;
 
         public String getName() { return name; }
@@ -143,6 +196,9 @@ public class AuthController {
 
         public String getPassword() { return password; }
         public void setPassword(String password) { this.password = password; }
+
+        public String getConfirmPassword() { return confirmPassword; }
+        public void setConfirmPassword(String confirmPassword) { this.confirmPassword = confirmPassword; }
 
         public String getRole() { return role; }
         public void setRole(String role) { this.role = role; }

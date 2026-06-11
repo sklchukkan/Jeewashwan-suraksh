@@ -374,7 +374,7 @@ function getLeafletStyle(feature) {
     const reportCount = feature.properties.reportCount || 0;
     const showRed = document.getElementById('filter-red').checked;
     const showOrange = document.getElementById('filter-orange').checked;
-    const showGreen = document.getElementById('filter-green').checked;
+    const showYellow = document.getElementById('filter-yellow').checked;
     
     let color = 'transparent';
     let fillOpacity = 0.0;
@@ -382,9 +382,9 @@ function getLeafletStyle(feature) {
     if (reportCount > 6) {
         if (showRed) { color = '#D32F2F'; fillOpacity = 0.55; }
     } else if (reportCount >= 3) {
-        if (showOrange) { color = '#F57C00'; fillOpacity = 0.50; }
+        if (showOrange) { color = '#E65100'; fillOpacity = 0.50; }
     } else if (reportCount >= 1) {
-        if (showGreen) { color = '#388E3C'; fillOpacity = 0.40; }
+        if (showYellow) { color = '#EAB308'; fillOpacity = 0.40; }
     }
     
     return {
@@ -468,7 +468,7 @@ function renderSvgMap() {
     
     const showRed = document.getElementById('filter-red').checked;
     const showOrange = document.getElementById('filter-orange').checked;
-    const showGreen = document.getElementById('filter-green').checked;
+    const showYellow = document.getElementById('filter-yellow').checked;
     
     wards.forEach(w => {
         const geom = w.feature.geometry;
@@ -487,9 +487,9 @@ function renderSvgMap() {
             if (reportCount > 6) {
                 if (showRed) fillColor = 'rgba(211, 47, 47, 0.6)';
             } else if (reportCount >= 3) {
-                if (showOrange) fillColor = 'rgba(245, 124, 0, 0.65)';
+                if (showOrange) fillColor = 'rgba(230, 81, 0, 0.65)';
             } else if (reportCount >= 1) {
-                if (showGreen) fillColor = 'rgba(56, 142, 60, 0.55)';
+                if (showYellow) fillColor = 'rgba(234, 179, 8, 0.55)';
             }
             
             svgHtml += `
@@ -570,7 +570,7 @@ function generatePopupContent(props) {
         colorClass = 'orange';
         riskLabel = 'Moderate';
     } else if (reportCount >= 1) {
-        colorClass = 'green';
+        colorClass = 'yellow';
         riskLabel = 'Low Risk';
     }
     
@@ -630,7 +630,7 @@ document.addEventListener('DOMContentLoaded', () => {
         else labelElement.classList.remove('active');
     };
 
-    ['red', 'orange', 'green'].forEach(type => {
+    ['red', 'orange', 'yellow'].forEach(type => {
         const checkboxId = `filter-${type}`;
         const cb = document.getElementById(checkboxId);
 
@@ -672,7 +672,7 @@ function updateWardListUI() {
             badgeClass = 'orange';
             badgeText = `${w.reportCount} Reports`;
         } else if (w.reportCount >= 1) {
-            badgeClass = 'green';
+            badgeClass = 'yellow';
             badgeText = `${w.reportCount} Reports`;
         }
         

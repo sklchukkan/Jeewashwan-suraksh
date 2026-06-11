@@ -101,6 +101,17 @@ public class ApiController {
                 return ResponseEntity.badRequest().body(Map.of("error", "Phone number and location are required."));
             }
 
+            // Server-side validations
+            if (!phone.matches("^\\d{10}$")) {
+                return ResponseEntity.badRequest().body(Map.of("error", "Please enter a valid mobile number."));
+            }
+
+            if (email != null && !email.trim().isEmpty()) {
+                if (!email.matches("^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}$")) {
+                    return ResponseEntity.badRequest().body(Map.of("error", "Please enter a valid email address."));
+                }
+            }
+
             Complaint complaint = new Complaint();
             complaint.setPhone(phone);
             complaint.setName(name);
