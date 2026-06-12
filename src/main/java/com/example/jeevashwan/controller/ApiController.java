@@ -107,8 +107,8 @@ public class ApiController {
             }
 
             if (email != null && !email.trim().isEmpty()) {
-                if (!email.matches("^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}$")) {
-                    return ResponseEntity.badRequest().body(Map.of("error", "Please enter a valid email address."));
+                if (!email.matches("^[A-Za-z0-9._%+-]{6,64}@(gmail|outlook|yahoo)\\.[A-Za-z]{2,6}(\\.[A-Za-z]{2,6})?$")) {
+                    return ResponseEntity.badRequest().body(Map.of("error", "Please enter a valid Gmail, Outlook, or Yahoo email address with a username part between 6 and 64 characters."));
                 }
             }
 

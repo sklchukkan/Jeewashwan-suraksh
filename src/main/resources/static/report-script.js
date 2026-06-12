@@ -191,7 +191,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const emailInput = document.getElementById('reporterEmail');
         const email = emailInput.value.trim();
         if (email !== "") {
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            const emailRegex = /^[A-Za-z0-9._%+-]{6,64}@(gmail|outlook|yahoo)\.[A-Za-z]{2,6}(\.[A-Za-z]{2,6})?$/;
             if (!emailRegex.test(email)) {
                 emailInput.classList.add('invalid');
                 document.getElementById('emailError').style.display = 'block';
