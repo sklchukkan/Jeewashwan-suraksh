@@ -180,7 +180,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Validate Phone (digits only, exactly 10 digits)
         const phoneInput = document.getElementById('reporterPhone');
         const phone = phoneInput.value.trim();
-        const phoneRegex = /^\d{10}$/;
+        const phoneRegex = /^[6-9]\d{9}$/;
         if (!phoneRegex.test(phone)) {
             phoneInput.classList.add('invalid');
             document.getElementById('phoneError').style.display = 'block';

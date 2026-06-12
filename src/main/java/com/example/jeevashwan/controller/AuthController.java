@@ -51,14 +51,14 @@ public class AuthController {
 
             // Mobile number validation
             String phone = request.getPhone().trim();
-            if (!phone.matches("^\\d{10}$")) {
-                return ResponseEntity.badRequest().body(Map.of("error", "Please enter a valid 10-digit mobile number."));
+            if (!phone.matches("^[6-9]\\d{9}$")) {
+                return ResponseEntity.badRequest().body(Map.of("error", "Please enter a valid 10-digit mobile number starting with 6, 7, 8, or 9."));
             }
 
             // Email validation
             String email = request.getEmail().trim();
-            if (!email.matches("^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}$")) {
-                return ResponseEntity.badRequest().body(Map.of("error", "Please enter a valid email address."));
+            if (!email.matches("^[A-Za-z0-9._%+-]{6,64}@(gmail|outlook|yahoo)\\.[A-Za-z]{2,6}(\\.[A-Za-z]{2,6})?$")) {
+                return ResponseEntity.badRequest().body(Map.of("error", "Please enter a valid Gmail, Outlook, or Yahoo email address with a username part between 6 and 64 characters."));
             }
 
             // Password validation

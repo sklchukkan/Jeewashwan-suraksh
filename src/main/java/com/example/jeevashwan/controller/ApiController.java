@@ -102,8 +102,8 @@ public class ApiController {
             }
 
             // Server-side validations
-            if (!phone.matches("^\\d{10}$")) {
-                return ResponseEntity.badRequest().body(Map.of("error", "Please enter a valid mobile number."));
+            if (!phone.matches("^[6-9]\\d{9}$")) {
+                return ResponseEntity.badRequest().body(Map.of("error", "Please enter a valid mobile number starting with 6, 7, 8, or 9."));
             }
 
             if (email != null && !email.trim().isEmpty()) {

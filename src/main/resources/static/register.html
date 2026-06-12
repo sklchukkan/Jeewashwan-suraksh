@@ -47,13 +47,13 @@
                     <label style="color: var(--color-gray);">Phone Number</label>
                     <input type="text" id="phone" required
                         style="width:100%; padding:10px; margin-top:5px; border-radius:8px; border:1px solid #ccc; font-family:inherit;">
-                    <div class="field-error" id="phoneError" style="color:red; font-size:0.8rem; margin-top:4px; display:none;">Please enter a valid 10-digit mobile number.</div>
+                    <div class="field-error" id="phoneError" style="color:red; font-size:0.8rem; margin-top:4px; display:none;">Please enter a valid 10-digit mobile number starting with 6, 7, 8, or 9.</div>
                 </div>
                 <div style="margin-bottom:15px;">
                     <label style="color: var(--color-gray);">Email Address</label>
                     <input type="email" id="email" required
                         style="width:100%; padding:10px; margin-top:5px; border-radius:8px; border:1px solid #ccc; font-family:inherit;">
-                    <div class="field-error" id="emailError" style="color:red; font-size:0.8rem; margin-top:4px; display:none;">Please enter a valid email address.</div>
+                    <div class="field-error" id="emailError" style="color:red; font-size:0.8rem; margin-top:4px; display:none;">Please enter a valid Gmail, Outlook, or Yahoo email address with a username part between 6 and 64 characters.</div>
                 </div>
                 <div style="margin-bottom:15px;">
                     <label style="color: var(--color-gray);">Password</label>
@@ -150,14 +150,14 @@
                 isValid = false;
             }
 
-            const phoneRegex = /^\d{10}$/;
+            const phoneRegex = /^[6-9]\d{9}$/;
             if (!phoneRegex.test(phone)) {
                 document.getElementById('phone').style.borderColor = 'red';
                 document.getElementById('phoneError').style.display = 'block';
                 isValid = false;
             }
 
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            const emailRegex = /^[A-Za-z0-9._%+-]{6,64}@(gmail|outlook|yahoo)\.[A-Za-z]{2,6}(\.[A-Za-z]{2,6})?$/;
             if (!emailRegex.test(email)) {
                 document.getElementById('email').style.borderColor = 'red';
                 document.getElementById('emailError').style.display = 'block';
