@@ -23,9 +23,6 @@ public class Receipt {
     @JoinColumn(name = "ngo_id")
     private User ngo;
 
-    @Column(name = "file_url")
-    @JsonProperty("file_url")
-    private String fileUrl;
 
     @JsonIgnore
     @Column(name = "image_data", columnDefinition = "BLOB")
@@ -62,8 +59,6 @@ public class Receipt {
         return ngo != null ? ngo.getId() : null;
     }
 
-    public String getFileUrl() { return fileUrl; }
-    public void setFileUrl(String fileUrl) { this.fileUrl = fileUrl; }
 
     public byte[] getImageData() { return imageData; }
     public void setImageData(byte[] imageData) { this.imageData = imageData; }

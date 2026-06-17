@@ -27,7 +27,7 @@ public class JeevashwanApplication {
                     "Admin",
                     "admin",
                     "admin@jeevashwan.org",
-                    "0000000000",
+                    "9037788300",
                     hashedPassword,
                     "admin"
                 );

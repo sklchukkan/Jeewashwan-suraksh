@@ -285,7 +285,6 @@ public class ApiController {
         map.put("id", r.getId());
         map.put("uploaded_at", r.getUploadedAt());
         map.put("has_image", r.getImageData() != null ? 1 : 0);
-        map.put("file_url", r.getFileUrl());
         map.put("amount", quotationOpt.get().getAmount());
 
         return ResponseEntity.ok(map);
@@ -509,7 +508,6 @@ public class ApiController {
             map.put("amount", r.getQuotation() != null ? r.getQuotation().getAmount() : 0.0);
             map.put("ngo_name", r.getNgo() != null ? r.getNgo().getUsername() : "Unknown");
             map.put("has_image", r.getImageData() != null ? 1 : 0);
-            map.put("file_url", r.getFileUrl());
             return map;
         }).collect(Collectors.toList());
 
