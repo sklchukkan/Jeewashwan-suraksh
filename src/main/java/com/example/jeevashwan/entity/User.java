@@ -28,6 +28,12 @@ public class User {
     @Column(nullable = false)
     private String role; // 'user', 'admin', 'ngo'
 
+    @Column
+    private Boolean approved;
+
+    @Column
+    private String rejectionReason;
+
     // Constructors
     public User() {}
 
@@ -38,6 +44,7 @@ public class User {
         this.phone = phone;
         this.password = password;
         this.role = role;
+        this.approved = true;
     }
 
     // Getters and Setters
@@ -61,4 +68,20 @@ public class User {
 
     public String getRole() { return role; }
     public void setRole(String role) { this.role = role; }
+
+    public Boolean getApproved() {
+        return approved == null ? true : approved;
+    }
+
+    public void setApproved(Boolean approved) {
+        this.approved = approved;
+    }
+
+    public String getRejectionReason() {
+        return rejectionReason;
+    }
+
+    public void setRejectionReason(String rejectionReason) {
+        this.rejectionReason = rejectionReason;
+    }
 }

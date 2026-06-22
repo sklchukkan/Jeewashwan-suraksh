@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage NGOs | Admin Portal</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <!-- Material Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
+    <!-- Base Stylesheet -->
+    <link rel="stylesheet" href="style.css">
+    
+    <style>
+        :root {
+            --sidebar-width: 260px;
+            --color-sidebar-bg: #1e293b;
+            --color-sidebar-hover: #334155;
+            --color-active-link: #3b82f6;
+            --color-card-border: #f1f5f9;
+        }
+
+        body {
+            display: flex;
+            background-color: #f8fafc;
+            min-height: 100vh;
+            font-family: var(--font-body);
+        }
+
+        /* Sidebar Styling */
+        .sidebar {
+            width: var(--sidebar-width);
+            background-color: var(--color-sidebar-bg);
+            color: #f8fafc;
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            display: flex;
+            flex-direction: column;
+            padding: 24px;
+            z-index: 100;
+        }
+
+        .sidebar-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-family: var(--font-heading);
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: #3b82f6;
+            margin-bottom: 40px;
+        }
+
+        .sidebar-logo span {
+            color: #ef4444;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            flex: 1;
+        }
+
+        .sidebar-menu-item a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            border-radius: var(--radius-sm);
+            color: #94a3b8;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+
+        .sidebar-menu-item a:hover {
+            background-color: var(--color-sidebar-hover);
+            color: #f8fafc;
+        }
+
+        .sidebar-menu-item.active a {
+            background-color: var(--color-active-link);
+            color: #ffffff;
+        }
+
+        .sidebar-footer {
+            margin-top: auto;
+        }
+
+        /* Main Content Container */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            flex: 1;
+            padding: 40px;
+            overflow-y: auto;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .stat-card {
+            background: #ffffff;
+            border-radius: var(--radius-sm);
+            padding: 24px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border: 1px solid #f1f5f9;
+        }
+
+        .stat-info h3 {
+            font-size: 0.875rem;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 4px;
+        }
+
+        .stat-info p {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #1e293b;
+        }
+
+        .stat-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .stat-icon.blue { background-color: #eff6ff; color: #3b82f6; }
+        .stat-icon.green { background-color: #f0fdf4; color: #22c55e; }
+        .stat-icon.yellow { background-color: #fefce8; color: #eab308; }
+
+        /* Panels */
+        .ngo-sections {
+            display: flex;
+            flex-direction: column;
+            gap: 32px;
+        }
+
+        .data-card {
+            background: #ffffff;
+            border-radius: var(--radius-sm);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            border: 1px solid #f1f5f9;
+            padding: 24px;
+        }
+
+        .data-card h3 {
+            font-size: 1.15rem;
+            color: #1e293b;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .ngo-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .ngo-table th, .ngo-table td {
+            text-align: left;
+            padding: 14px 16px;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .ngo-table th {
+            font-weight: 600;
+            color: #64748b;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+        }
+
+        .ngo-table td {
+            color: #334155;
+            font-size: 0.95rem;
+        }
+
+        .ngo-table tr:hover {
+            background-color: #f8fafc;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 0.85rem;
+            border-radius: 6px;
+        }
+
+        .status-pill {
+            display: inline-block;
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 999px;
+        }
+        .status-pill.approved { background-color: #dcfce7; color: #166534; }
+        .status-pill.pending { background-color: #fef9c3; color: #854d0e; }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-logo">
+            <span class="material-icons-outlined">pets</span>
+            Jeevashwan Admin
+        </div>
+        <ul class="sidebar-menu">
+            <li class="sidebar-menu-item">
+                <a href="dashboard-admin.html">
+                    <span class="material-icons-outlined">dashboard</span>
+                    Dashboard
+                </a>
+            </li>
+            <li class="sidebar-menu-item">
+                <a href="admin-complaints.html">
+                    <span class="material-icons-outlined">report_problem</span>
+                    Manage Complaints
+                </a>
+            </li>
+            <li class="sidebar-menu-item active">
+                <a href="admin-ngos.html">
+                    <span class="material-icons-outlined">people</span>
+                    Manage NGOs
+                </a>
+            </li>
+        </ul>
+        <div class="sidebar-footer">
+            <li class="sidebar-menu-item" style="list-style: none; margin-bottom: 10px;">
+                <a href="#" onclick="openProfileModal(); return false;">
+                    <span class="material-icons-outlined">account_circle</span>
+                    Profile
+                </a>
+            </li>
+            <li class="sidebar-menu-item" style="list-style: none;">
+                <a href="#" onclick="logout()">
+                    <span class="material-icons-outlined">logout</span>
+                    Logout
+                </a>
+            </li>
+        </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+            <h2>NGO Partners Manager</h2>
+            <div style="font-size: 0.95rem; color:#64748b;">Logged in as <strong>Administrator</strong></div>
+        </div>
+
+        <!-- Stats Grid -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-info">
+                    <h3>Total Registered NGOs</h3>
+                    <p id="totalNgos">0</p>
+                </div>
+                <div class="stat-icon blue">
+                    <span class="material-icons-outlined">people_alt</span>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-info">
+                    <h3>Approved Partners</h3>
+                    <p id="approvedNgos">0</p>
+                </div>
+                <div class="stat-icon green">
+                    <span class="material-icons-outlined">check_circle</span>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-info">
+                    <h3>Pending Approvals</h3>
+                    <p id="pendingNgos">0</p>
+                </div>
+                <div class="stat-icon yellow">
+                    <span class="material-icons-outlined">hourglass_empty</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- NGO Lists -->
+        <div class="ngo-sections">
+            <!-- Pending Approvals Card -->
+            <div class="data-card">
+                <h3>
+                    <span class="material-icons-outlined" style="color:#eab308;">hourglass_top</span>
+                    Pending NGO Approvals
+                </h3>
+                <table class="ngo-table">
+                    <thead>
+                        <tr>
+                            <th>NGO ID</th>
+                            <th>NGO Name</th>
+                            <th>Username</th>
+                            <th>Contact Phone</th>
+                            <th>Email Address</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="pendingList">
+                        <!-- Dynamic content -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Approved Partners Card -->
+            <div class="data-card">
+                <h3>
+                    <span class="material-icons-outlined" style="color:#22c55e;">verified</span>
+                    Approved NGO Partners
+                </h3>
+                <table class="ngo-table">
+                    <thead>
+                        <tr>
+                            <th>NGO ID</th>
+                            <th>NGO Name</th>
+                            <th>Username</th>
+                            <th>Contact Phone</th>
+                            <th>Email Address</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="approvedList">
+                        <!-- Dynamic content -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const token = localStorage.getItem('token');
+        if (!token) window.location.href = 'login.html';
+
+        async function loadNGOsData() {
+            const h = { 'Authorization': 'Bearer ' + token };
+            try {
+                const res = await fetch('/api/admin/all-ngos', { headers: h });
+                const ngos = res.ok ? await res.json() : [];
+
+                const pendingBody = document.getElementById('pendingList');
+                const approvedBody = document.getElementById('approvedList');
+
+                pendingBody.innerHTML = '';
+                approvedBody.innerHTML = '';
+
+                let pendingCount = 0;
+                let approvedCount = 0;
+
+                ngos.forEach(n => {
+                    const rowHtml = `
+                        <tr>
+                            <td><strong>#${n.id}</strong></td>
+                            <td>${n.name}</td>
+                            <td>@${n.username}</td>
+                            <td><a href="tel:${n.phone}" style="color:#3b82f6; text-decoration:underline;">${n.phone}</a></td>
+                            <td>${n.email || '<span style="color:#94a3b8;">N/A</span>'}</td>
+                            <td>
+                                <div class="action-buttons">
+                                    ${n.approved ? 
+                                        `<button class="btn btn-sm btn-secondary" style="border-color:#ef4444; background:#fef2f2; color:#ef4444;" onclick="rejectNGO(${n.id})">Revoke Approval</button>` :
+                                        `<button class="btn btn-sm btn-primary" onclick="approveNGO(${n.id})">Approve</button>
+                                         <button class="btn btn-sm btn-outline" style="color:#ef4444; border-color:#ef4444;" onclick="rejectNGO(${n.id})">Reject</button>`
+                                    }
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+
+                    if (n.approved) {
+                        approvedCount++;
+                        approvedBody.innerHTML += rowHtml;
+                    } else {
+                        pendingCount++;
+                        pendingBody.innerHTML += rowHtml;
+                    }
+                });
+
+                document.getElementById('totalNgos').innerText = ngos.length;
+                document.getElementById('approvedNgos').innerText = approvedCount;
+                document.getElementById('pendingNgos').innerText = pendingCount;
+
+                if (pendingCount === 0) {
+                    pendingBody.innerHTML = `
+                        <tr>
+                            <td colspan="6" style="text-align:center; color:#94a3b8; padding:20px;">
+                                No pending NGO registrations found.
+                            </td>
+                        </tr>
+                    `;
+                }
+
+                if (approvedCount === 0) {
+                    approvedBody.innerHTML = `
+                        <tr>
+                            <td colspan="6" style="text-align:center; color:#94a3b8; padding:20px;">
+                                No approved NGO partners found.
+                            </td>
+                        </tr>
+                    `;
+                }
+
+            } catch (err) {
+                console.error("Error loading NGOs overview:", err);
+            }
+        }
+
+        async function approveNGO(id) {
+            if (!confirm('Are you sure you want to approve this NGO?')) return;
+            const h = { 
+                'Authorization': 'Bearer ' + token,
+                'Content-Type': 'application/json'
+            };
+            const res = await fetch(`/api/admin/ngos/${id}/approve`, {
+                method: 'POST',
+                headers: h
+            });
+            if (res.ok) {
+                alert('NGO approved successfully.');
+                loadNGOsData();
+            } else {
+                const data = await res.json();
+                alert('Error: ' + (data.error || 'Failed to approve NGO.'));
+            }
+        }
+
+        async function rejectNGO(id) {
+            const reason = prompt('Please enter the reason for rejection:', 'Information provided was invalid or incomplete.');
+            if (reason === null) return; // cancelled
+
+            const h = { 
+                'Authorization': 'Bearer ' + token,
+                'Content-Type': 'application/json'
+            };
+            const res = await fetch(`/api/admin/ngos/${id}/reject`, {
+                method: 'POST',
+                headers: h,
+                body: JSON.stringify({ reason: reason })
+            });
+            if (res.ok) {
+                alert('NGO registration rejected and marked for deletion.');
+                loadNGOsData();
+            } else {
+                const data = await res.json();
+                alert('Error: ' + (data.error || 'Failed to update NGO status.'));
+            }
+        }
+
+        loadNGOsData();
+
+        function logout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            window.location.href = 'index.html';
+        }
+    </script>
+    <script src="auth-nav.js"></script>
+</body>
+</html>

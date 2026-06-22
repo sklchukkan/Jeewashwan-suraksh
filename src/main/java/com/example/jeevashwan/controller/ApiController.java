@@ -209,11 +209,17 @@ public class ApiController {
         }
 
         User user = userDetails.getUser();
-        Optional<UserLoginDetail> loginDetailOpt = userLoginDetailRepository.findFirstByUserIdOrderByIdDesc(user.getId());
+        Optional<User> dbUserOpt = userRepository.findById(user.getId());
+        if (dbUserOpt.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "User not found"));
+        }
+        User dbUser = dbUserOpt.get();
+
+        Optional<UserLoginDetail> loginDetailOpt = userLoginDetailRepository.findFirstByUserIdOrderByIdDesc(dbUser.getId());
         
-        String name = user.getName();
-        String phone = user.getPhone();
-        String email = user.getEmail() != null ? user.getEmail() : "";
+        String name = dbUser.getName();
+        String phone = dbUser.getPhone();
+        String email = dbUser.getEmail() != null ? dbUser.getEmail() : "";
         
         if (loginDetailOpt.isPresent()) {
             UserLoginDetail loginDetail = loginDetailOpt.get();
@@ -223,12 +229,13 @@ public class ApiController {
         }
 
         return ResponseEntity.ok(Map.of(
-            "id", user.getId(),
+            "id", dbUser.getId(),
             "name", name,
-            "username", user.getUsername(),
+            "username", dbUser.getUsername(),
             "phone", phone,
             "email", email,
-            "role", user.getRole()
+            "role", dbUser.getRole(),
+            "approved", dbUser.getApproved() != null ? dbUser.getApproved() : true
         ));
     }
 
@@ -352,15 +359,68 @@ public class ApiController {
     @GetMapping("/admin/ngos")
     public ResponseEntity<?> getAdminNgos() {
         List<User> ngos = userRepository.findByRole("ngo");
+        List<Map<String, Object>> response = ngos.stream()
+            .filter(n -> n.getApproved() != null && n.getApproved())
+            .map(n -> {
+                Map<String, Object> map = new HashMap<>();
+                map.put("id", n.getId());
+                map.put("name", n.getName());
+                map.put("phone", n.getPhone());
+                return map;
+            }).collect(Collectors.toList());
+
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/admin/all-ngos")
+    public ResponseEntity<?> getAdminAllNgos() {
+        List<User> ngos = userRepository.findByRole("ngo");
         List<Map<String, Object>> response = ngos.stream().map(n -> {
             Map<String, Object> map = new HashMap<>();
             map.put("id", n.getId());
             map.put("name", n.getName());
+            map.put("username", n.getUsername());
+            map.put("email", n.getEmail() != null ? n.getEmail() : "");
             map.put("phone", n.getPhone());
+            map.put("approved", n.getApproved() != null ? n.getApproved() : true);
             return map;
         }).collect(Collectors.toList());
 
         return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/admin/ngos/{id}/approve")
+    public ResponseEntity<?> approveNgo(@PathVariable("id") Long id) {
+        Optional<User> ngoOpt = userRepository.findById(id);
+        if (ngoOpt.isEmpty() || !ngoOpt.get().getRole().equals("ngo")) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", "NGO not found."));
+        }
+
+        User ngo = ngoOpt.get();
+        ngo.setApproved(true);
+        userRepository.save(ngo);
+
+        return ResponseEntity.ok(Map.of("message", "NGO approved successfully."));
+    }
+
+    @PostMapping("/admin/ngos/{id}/reject")
+    public ResponseEntity<?> rejectNgo(@PathVariable("id") Long id, @RequestBody(required = false) Map<String, String> body) {
+        Optional<User> ngoOpt = userRepository.findById(id);
+        if (ngoOpt.isEmpty() || !ngoOpt.get().getRole().equals("ngo")) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", "NGO not found."));
+        }
+
+        String reason = "Registration did not meet credentials.";
+        if (body != null && body.containsKey("reason") && body.get("reason") != null) {
+            reason = body.get("reason");
+        }
+
+        User ngo = ngoOpt.get();
+        ngo.setApproved(false);
+        ngo.setRejectionReason(reason);
+        userRepository.save(ngo);
+
+        return ResponseEntity.ok(Map.of("message", "NGO approval rejected/revoked successfully."));
     }
 
     /* ==========================================
@@ -369,6 +429,19 @@ public class ApiController {
 
     @GetMapping("/ngo/quotations")
     public ResponseEntity<?> getNgoQuotations(@AuthenticationPrincipal CustomUserDetails userDetails) {
+        Optional<User> dbUserOpt = userRepository.findById(userDetails.getId());
+        if (dbUserOpt.isPresent()) {
+            User user = dbUserOpt.get();
+            if (!user.getApproved()) {
+                if (user.getRejectionReason() != null) {
+                    String reason = user.getRejectionReason();
+                    userRepository.delete(user);
+                    return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("error", "rejected", "reason", reason));
+                } else {
+                    return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("error", "pending"));
+                }
+            }
+        }
         List<Quotation> quotations = quotationRepository.findByNgoIdOrderByIdDesc(userDetails.getId());
         List<NgoQuotationResponse> response = quotations.stream().map(q -> {
             Complaint c = q.getComplaint();
@@ -417,6 +490,11 @@ public class ApiController {
             @RequestParam("receipt") MultipartFile file,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
         try {
+            Optional<User> dbUserOpt = userRepository.findById(userDetails.getId());
+            if (dbUserOpt.isPresent() && !dbUserOpt.get().getApproved()) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("error", "NGO account is pending admin approval."));
+            }
+
             if (quotationId == null || file == null || file.isEmpty()) {
                 return ResponseEntity.badRequest().body(Map.of("error", "Quotation ID and receipt image are required."));
             }

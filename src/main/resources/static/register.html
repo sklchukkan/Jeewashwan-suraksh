@@ -41,13 +41,35 @@
                     <label style="color: var(--color-gray);">Username</label>
                     <input type="text" id="username" required
                         style="width:100%; padding:10px; margin-top:5px; border-radius:8px; border:1px solid #ccc; font-family:inherit;">
-                    <div class="field-error" id="usernameError" style="color:red; font-size:0.8rem; margin-top:4px; display:none;">Username must be at least 4 characters and contain only letters, numbers, and underscores.</div>
+                    <div id="usernameRequirements" style="margin-top: 8px; font-size: 0.8rem; display: flex; flex-direction: column; gap: 4px;">
+                        <div id="reqUserLength" style="color: #94a3b8; display: flex; align-items: center; gap: 6px; transition: color 0.2s;">
+                            <span class="material-icons-outlined" style="font-size: 1rem;">cancel</span> At least 4 characters
+                        </div>
+                        <div id="reqUserChars" style="color: #94a3b8; display: flex; align-items: center; gap: 6px; transition: color 0.2s;">
+                            <span class="material-icons-outlined" style="font-size: 1rem;">cancel</span> Letters, numbers, and underscores only
+                        </div>
+                        <div id="reqUserAvailability" style="color: #94a3b8; display: flex; align-items: center; gap: 6px; transition: color 0.2s;">
+                            <span class="material-icons-outlined" style="font-size: 1rem;">cancel</span> Username is available
+                        </div>
+                    </div>
+                    <div class="field-error" id="usernameError" style="color:red; font-size:0.8rem; margin-top:4px; display:none;">Please satisfy all username requirements.</div>
                 </div>
                 <div style="margin-bottom:15px;">
                     <label style="color: var(--color-gray);">Phone Number</label>
                     <input type="text" id="phone" required
                         style="width:100%; padding:10px; margin-top:5px; border-radius:8px; border:1px solid #ccc; font-family:inherit;">
-                    <div class="field-error" id="phoneError" style="color:red; font-size:0.8rem; margin-top:4px; display:none;">Please enter a valid 10-digit mobile number starting with 6, 7, 8, or 9.</div>
+                    <div id="phoneRequirements" style="margin-top: 8px; font-size: 0.8rem; display: flex; flex-direction: column; gap: 4px;">
+                        <div id="reqPhoneDigits" style="color: #94a3b8; display: flex; align-items: center; gap: 6px; transition: color 0.2s;">
+                            <span class="material-icons-outlined" style="font-size: 1rem;">cancel</span> Only numbers (0-9)
+                        </div>
+                        <div id="reqPhoneStart" style="color: #94a3b8; display: flex; align-items: center; gap: 6px; transition: color 0.2s;">
+                            <span class="material-icons-outlined" style="font-size: 1rem;">cancel</span> Starts with 6, 7, 8, or 9
+                        </div>
+                        <div id="reqPhoneLength" style="color: #94a3b8; display: flex; align-items: center; gap: 6px; transition: color 0.2s;">
+                            <span class="material-icons-outlined" style="font-size: 1rem;">cancel</span> Exactly 10 digits
+                        </div>
+                    </div>
+                    <div class="field-error" id="phoneError" style="color:red; font-size:0.8rem; margin-top:4px; display:none;">Please satisfy all phone number requirements.</div>
                 </div>
                 <div style="margin-bottom:15px;">
                     <label style="color: var(--color-gray);">Email Address</label>
@@ -57,14 +79,39 @@
                 </div>
                 <div style="margin-bottom:15px;">
                     <label style="color: var(--color-gray);">Password</label>
-                    <input type="password" id="password" required
-                        style="width:100%; padding:10px; margin-top:5px; border-radius:8px; border:1px solid #ccc; font-family:inherit;">
-                    <div class="field-error" id="passwordError" style="color:red; font-size:0.8rem; margin-top:4px; display:none;">Password must be at least 8 characters and contain at least one uppercase letter, one lowercase letter, one number, and one special character.</div>
+                    <div style="position: relative; margin-top: 5px;">
+                        <input type="password" id="password" required
+                            style="width:100%; padding:10px; padding-right:40px; border-radius:8px; border:1px solid #ccc; font-family:inherit;">
+                        <span class="material-icons-outlined toggle-password-visibility" data-target="password"
+                            style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); cursor: pointer; color: #64748b; user-select: none;">visibility_off</span>
+                    </div>
+                    <div id="passwordRequirements" style="margin-top: 8px; font-size: 0.8rem; display: flex; flex-direction: column; gap: 4px;">
+                        <div id="reqLength" style="color: #94a3b8; display: flex; align-items: center; gap: 6px; transition: color 0.2s;">
+                            <span class="material-icons-outlined" style="font-size: 1rem;">cancel</span> At least 8 characters
+                        </div>
+                        <div id="reqUpper" style="color: #94a3b8; display: flex; align-items: center; gap: 6px; transition: color 0.2s;">
+                            <span class="material-icons-outlined" style="font-size: 1rem;">cancel</span> One uppercase letter (A-Z)
+                        </div>
+                        <div id="reqLower" style="color: #94a3b8; display: flex; align-items: center; gap: 6px; transition: color 0.2s;">
+                            <span class="material-icons-outlined" style="font-size: 1rem;">cancel</span> One lowercase letter (a-z)
+                        </div>
+                        <div id="reqNumber" style="color: #94a3b8; display: flex; align-items: center; gap: 6px; transition: color 0.2s;">
+                            <span class="material-icons-outlined" style="font-size: 1rem;">cancel</span> One number (0-9)
+                        </div>
+                        <div id="reqSpecial" style="color: #94a3b8; display: flex; align-items: center; gap: 6px; transition: color 0.2s;">
+                            <span class="material-icons-outlined" style="font-size: 1rem;">cancel</span> One special character (e.g. @$!%*?&)
+                        </div>
+                    </div>
+                    <div class="field-error" id="passwordError" style="color:red; font-size:0.8rem; margin-top:4px; display:none;">Please satisfy all password requirements.</div>
                 </div>
                 <div style="margin-bottom:20px;">
                     <label style="color: var(--color-gray);">Confirm Password</label>
-                    <input type="password" id="confirmPassword" required
-                        style="width:100%; padding:10px; margin-top:5px; border-radius:8px; border:1px solid #ccc; font-family:inherit;">
+                    <div style="position: relative; margin-top: 5px;">
+                        <input type="password" id="confirmPassword" required
+                            style="width:100%; padding:10px; padding-right:40px; border-radius:8px; border:1px solid #ccc; font-family:inherit;">
+                        <span class="material-icons-outlined toggle-password-visibility" data-target="confirmPassword"
+                            style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); cursor: pointer; color: #64748b; user-select: none;">visibility_off</span>
+                    </div>
                     <div class="field-error" id="confirmPasswordError" style="color:red; font-size:0.8rem; margin-top:4px; display:none;">Passwords do not match.</div>
                 </div>
                 <button type="submit" class="btn btn-primary full-width">Register</button>
@@ -76,7 +123,7 @@
     </div>
     <script>
         // Setup input event listeners to clear error styles dynamically as user types
-        const fields = ['name', 'username', 'phone', 'email', 'password', 'confirmPassword'];
+        const fields = ['name', 'confirmPassword'];
         fields.forEach(field => {
             const input = document.getElementById(field);
             if (input) {
@@ -89,39 +136,232 @@
             }
         });
 
-        // Add blur listener to check username availability on-the-fly
-        const usernameInput = document.getElementById('username');
-        usernameInput.addEventListener('blur', async () => {
-            const username = usernameInput.value.trim();
-            if (username.length >= 4) {
-                try {
-                    const res = await fetch(`/api/auth/check-username?username=${encodeURIComponent(username)}`);
-                    if (res.ok) {
-                        const data = await res.json();
-                        if (!data.available) {
-                            usernameInput.style.borderColor = 'red';
-                            document.getElementById('usernameError').innerText = 'Username is already taken.';
-                            document.getElementById('usernameError').style.display = 'block';
-                        } else {
-                            // Reset style if it was taken but now it is clean
-                            if (document.getElementById('usernameError').innerText === 'Username is already taken.') {
-                                usernameInput.style.borderColor = '#ccc';
-                                document.getElementById('usernameError').style.display = 'none';
-                            }
-                        }
+        // Toggle password visibility
+        document.querySelectorAll('.toggle-password-visibility').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const targetId = btn.getAttribute('data-target');
+                const input = document.getElementById(targetId);
+                if (input) {
+                    if (input.type === 'password') {
+                        input.type = 'text';
+                        btn.innerText = 'visibility';
+                    } else {
+                        input.type = 'password';
+                        btn.innerText = 'visibility_off';
                     }
-                } catch (err) {
-                    console.error("Error checking username availability:", err);
                 }
+            });
+        });
+
+
+        // 1. Password Validator
+        const passwordInput = document.getElementById('password');
+        passwordInput.addEventListener('input', () => {
+            const val = passwordInput.value;
+            const isLengthMet = val.length >= 8;
+            const isUpperMet = /[A-Z]/.test(val);
+            const isLowerMet = /[a-z]/.test(val);
+            const isNumberMet = /[0-9]/.test(val);
+            const isSpecialMet = /[^a-zA-Z0-9]/.test(val);
+
+            updateRequirementUI('reqLength', isLengthMet);
+            updateRequirementUI('reqUpper', isUpperMet);
+            updateRequirementUI('reqLower', isLowerMet);
+            updateRequirementUI('reqNumber', isNumberMet);
+            updateRequirementUI('reqSpecial', isSpecialMet);
+        });
+
+        function updateRequirementUI(elementId, state) {
+            const el = document.getElementById(elementId);
+            const icon = el.querySelector('.material-icons-outlined');
+            if (state === true || state === 'success') {
+                el.style.color = '#16a34a'; // Green
+                icon.innerText = 'check_circle';
+            } else if (state === 'error') {
+                el.style.color = '#ef4444'; // Red
+                icon.innerText = 'cancel';
+            } else if (state === 'pending') {
+                el.style.color = '#64748b'; // Checking gray-blue
+                icon.innerText = 'pending';
+            } else {
+                el.style.color = '#94a3b8'; // Grey
+                icon.innerText = 'cancel';
+            }
+        }
+
+        // 2. Email Validator
+        function validateEmailLive(email) {
+            if (!email) return null;
+
+            const atIndex = email.indexOf('@');
+            if (atIndex === -1) {
+                return "Email must contain an '@' character.";
+            }
+
+            const username = email.substring(0, atIndex);
+            const domainPart = email.substring(atIndex + 1);
+
+            if (username.length < 6) {
+                return `Username before '@' is too short (currently ${username.length} characters, needs at least 6).`;
+            }
+            if (username.length > 64) {
+                return `Username before '@' is too long (currently ${username.length} characters, maximum 64).`;
+            }
+            
+            const usernameRegex = /^[A-Za-z0-9._%+-]+$/;
+            if (!usernameRegex.test(username)) {
+                return "Username contains invalid characters (only letters, numbers, and . _ % + - are allowed).";
+            }
+
+            if (!domainPart) {
+                return "Please enter a domain name after '@' (e.g. gmail.com).";
+            }
+
+            if (/[A-Z]/.test(domainPart)) {
+                return "Domain name after '@' must be in all lowercase letters (e.g. @gmail.com).";
+            }
+
+            const dotIndex = domainPart.indexOf('.');
+            const domainName = dotIndex === -1 ? domainPart : domainPart.substring(0, dotIndex);
+            
+            if (domainName !== 'gmail' && domainName !== 'outlook' && domainName !== 'yahoo') {
+                return "Only gmail, outlook, or yahoo domains are allowed.";
+            }
+
+            if (dotIndex === -1 || dotIndex === domainPart.length - 1) {
+                return "Domain must include a period followed by a top-level domain (e.g. .com).";
+            }
+
+            const tld = domainPart.substring(dotIndex);
+            const tldRegex = /^\.[a-z]{2,6}(\.[a-z]{2,6})?$/;
+            if (!tldRegex.test(tld)) {
+                return "Please enter a valid top-level domain (e.g. .com, .co.in).";
+            }
+
+            return null; // Valid!
+        }
+
+        const emailInput = document.getElementById('email');
+        const emailErrorEl = document.getElementById('emailError');
+        emailInput.addEventListener('input', () => {
+            const emailVal = emailInput.value.trim();
+            if (emailVal === '') {
+                emailInput.style.borderColor = '#ccc';
+                emailErrorEl.style.display = 'none';
+                return;
+            }
+
+            const errorMsg = validateEmailLive(emailVal);
+            if (errorMsg) {
+                emailInput.style.borderColor = '#ef4444';
+                emailErrorEl.innerText = errorMsg;
+                emailErrorEl.style.color = '#ef4444';
+                emailErrorEl.style.display = 'block';
+            } else {
+                emailInput.style.borderColor = '#16a34a';
+                emailErrorEl.innerText = 'Email is valid.';
+                emailErrorEl.style.color = '#16a34a';
+                emailErrorEl.style.display = 'block';
             }
         });
 
+        // 3. Username Validator (with live backend check & requirements checklist)
+        let usernameTimeout = null;
+        let isUsernameAvailable = false;
+        const usernameInput = document.getElementById('username');
+        const usernameErrorEl = document.getElementById('usernameError');
+
+        usernameInput.addEventListener('input', () => {
+            const usernameVal = usernameInput.value.trim();
+            
+            const isLengthMet = usernameVal.length >= 4;
+            const isCharsMet = usernameVal.length > 0 && /^[a-zA-Z0-9_]+$/.test(usernameVal);
+            const hasInvalidChars = usernameVal.length > 0 && !/^[a-zA-Z0-9_]+$/.test(usernameVal);
+
+            updateRequirementUI('reqUserLength', usernameVal.length === 0 ? 'default' : (isLengthMet ? 'success' : 'default'));
+            updateRequirementUI('reqUserChars', usernameVal.length === 0 ? 'default' : (isCharsMet ? 'success' : (hasInvalidChars ? 'error' : 'default')));
+
+            // Reset availability UI
+            isUsernameAvailable = false;
+            updateRequirementUI('reqUserAvailability', 'default');
+
+            // Clear previous errors when typing
+            usernameInput.style.borderColor = '#ccc';
+            usernameErrorEl.style.display = 'none';
+
+            clearTimeout(usernameTimeout);
+
+            if (isLengthMet && isCharsMet) {
+                updateRequirementUI('reqUserAvailability', 'pending');
+
+                usernameTimeout = setTimeout(async () => {
+                    try {
+                        const res = await fetch(`/api/auth/check-username?username=${encodeURIComponent(usernameVal)}`);
+                        if (res.ok) {
+                            const data = await res.json();
+                            if (data.available) {
+                                isUsernameAvailable = true;
+                                updateRequirementUI('reqUserAvailability', 'success');
+                                usernameInput.style.borderColor = '#16a34a';
+                            } else {
+                                isUsernameAvailable = false;
+                                updateRequirementUI('reqUserAvailability', 'error');
+                                usernameInput.style.borderColor = '#ef4444';
+                            }
+                        }
+                    } catch (err) {
+                        console.error(err);
+                    }
+                }, 300);
+            } else if (hasInvalidChars) {
+                usernameInput.style.borderColor = '#ef4444';
+            }
+        });
+
+        // 4. Phone Validator (with requirements checklist)
+        const phoneInput = document.getElementById('phone');
+        const phoneErrorEl = document.getElementById('phoneError');
+
+        phoneInput.addEventListener('input', () => {
+            const phoneVal = phoneInput.value.trim();
+
+            // Clear previous errors when typing
+            phoneInput.style.borderColor = '#ccc';
+            phoneErrorEl.style.display = 'none';
+
+            const isDigitsMet = phoneVal.length > 0 && /^\d+$/.test(phoneVal);
+            const hasNonDigits = phoneVal.length > 0 && !/^\d+$/.test(phoneVal);
+
+            const isStartMet = phoneVal.length > 0 && /^[6-9]/.test(phoneVal);
+            const hasBadStart = phoneVal.length > 0 && !/^[6-9]/.test(phoneVal);
+
+            const isLengthMet = phoneVal.length === 10;
+            const isTooLong = phoneVal.length > 10;
+
+            updateRequirementUI('reqPhoneDigits', phoneVal.length === 0 ? 'default' : (isDigitsMet ? 'success' : 'error'));
+            updateRequirementUI('reqPhoneStart', phoneVal.length === 0 ? 'default' : (isStartMet ? 'success' : (hasBadStart ? 'error' : 'default')));
+            updateRequirementUI('reqPhoneLength', phoneVal.length === 0 ? 'default' : (isLengthMet ? 'success' : (isTooLong ? 'error' : 'default')));
+
+            const allMet = isDigitsMet && isStartMet && isLengthMet;
+            const anyError = hasNonDigits || hasBadStart || isTooLong;
+
+            if (allMet) {
+                phoneInput.style.borderColor = '#16a34a';
+            } else if (anyError) {
+                phoneInput.style.borderColor = '#ef4444';
+            } else {
+                phoneInput.style.borderColor = '#ccc';
+            }
+        });
+
+        // Form Submit Handler
         document.getElementById('registerForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             
             // Clear previous error styles
             let isValid = true;
-            fields.forEach(field => {
+            const allFields = ['name', 'username', 'phone', 'email', 'password', 'confirmPassword'];
+            allFields.forEach(field => {
                 const input = document.getElementById(field);
                 if (input) input.style.borderColor = '#ccc';
                 const errorEl = document.getElementById(field + 'Error');
@@ -142,24 +382,41 @@
                 isValid = false;
             }
 
-            const usernameRegex = /^[a-zA-Z0-9_]{4,}$/;
-            if (!usernameRegex.test(username)) {
+            // Username submit check
+            const isUserLengthMet = username.length >= 4;
+            const isUserCharsMet = username.length > 0 && /^[a-zA-Z0-9_]+$/.test(username);
+            if (!isUserLengthMet || !isUserCharsMet || !isUsernameAvailable) {
                 document.getElementById('username').style.borderColor = 'red';
-                document.getElementById('usernameError').innerText = 'Username must be at least 4 characters and contain only letters, numbers, and underscores.';
                 document.getElementById('usernameError').style.display = 'block';
+                
+                // Highlight unmet requirements in red
+                if (!isUserLengthMet) updateRequirementUI('reqUserLength', 'error');
+                if (!isUserCharsMet) updateRequirementUI('reqUserChars', 'error');
+                if (!isUsernameAvailable) updateRequirementUI('reqUserAvailability', 'error');
+                
                 isValid = false;
             }
 
-            const phoneRegex = /^[6-9]\d{9}$/;
-            if (!phoneRegex.test(phone)) {
+            // Phone submit check
+            const isPhoneDigitsMet = phone.length > 0 && /^\d+$/.test(phone);
+            const isPhoneStartMet = phone.length > 0 && /^[6-9]/.test(phone);
+            const isPhoneLengthMet = phone.length === 10;
+            if (!isPhoneDigitsMet || !isPhoneStartMet || !isPhoneLengthMet) {
                 document.getElementById('phone').style.borderColor = 'red';
                 document.getElementById('phoneError').style.display = 'block';
+
+                if (!isPhoneDigitsMet) updateRequirementUI('reqPhoneDigits', 'error');
+                if (!isPhoneStartMet) updateRequirementUI('reqPhoneStart', 'error');
+                if (!isPhoneLengthMet) updateRequirementUI('reqPhoneLength', 'error');
+
                 isValid = false;
             }
 
-            const emailRegex = /^[A-Za-z0-9._%+-]{6,64}@(gmail|outlook|yahoo)\.[A-Za-z]{2,6}(\.[A-Za-z]{2,6})?$/;
-            if (!emailRegex.test(email)) {
+            const emailErrorMsg = validateEmailLive(email);
+            if (emailErrorMsg) {
                 document.getElementById('email').style.borderColor = 'red';
+                document.getElementById('emailError').innerText = emailErrorMsg;
+                document.getElementById('emailError').style.color = 'red';
                 document.getElementById('emailError').style.display = 'block';
                 isValid = false;
             }
@@ -171,6 +428,14 @@
             if (password.length < 8 || !hasUpper || !hasLower || !hasNumber || !hasSpecial) {
                 document.getElementById('password').style.borderColor = 'red';
                 document.getElementById('passwordError').style.display = 'block';
+                
+                // Highlight unmet requirements in red
+                if (password.length < 8) document.getElementById('reqLength').style.color = '#ef4444';
+                if (!hasUpper) document.getElementById('reqUpper').style.color = '#ef4444';
+                if (!hasLower) document.getElementById('reqLower').style.color = '#ef4444';
+                if (!hasNumber) document.getElementById('reqNumber').style.color = '#ef4444';
+                if (!hasSpecial) document.getElementById('reqSpecial').style.color = '#ef4444';
+                
                 isValid = false;
             }
 
@@ -209,9 +474,9 @@
                     alert('Registration successful! Please login.');
                     window.location.href = 'login.html';
                 } else {
-                    if (data.error && data.error.includes('Username already exists')) {
+                    if (data.error && (data.error.includes('Username already exists') || data.error.includes('already taken') || (data.details && data.details.includes('Username already exists')))) {
                         document.getElementById('username').style.borderColor = 'red';
-                        document.getElementById('usernameError').innerText = 'Username is already taken.';
+                        updateRequirementUI('reqUserAvailability', 'error');
                         document.getElementById('usernameError').style.display = 'block';
                     } else {
                         document.getElementById('registerError').innerText = data.details || data.error || 'Registration failed.';

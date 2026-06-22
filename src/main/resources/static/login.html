@@ -30,8 +30,12 @@
                 </div>
                 <div style="margin-bottom:20px;">
                     <label style="color: var(--color-gray);">Password</label>
-                    <input type="password" id="password" required
-                        style="width:100%; padding:10px; margin-top:5px; border-radius:8px; border:1px solid #ccc; font-family:inherit;">
+                    <div style="position: relative; margin-top: 5px;">
+                        <input type="password" id="password" required
+                            style="width:100%; padding:10px; padding-right:40px; border-radius:8px; border:1px solid #ccc; font-family:inherit;">
+                        <span class="material-icons-outlined toggle-password-visibility" data-target="password"
+                            style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); cursor: pointer; color: #64748b; user-select: none;">visibility_off</span>
+                    </div>
                 </div>
                 <button type="submit" class="btn btn-primary full-width">Login</button>
                 <div id="loginError" style="color:red; margin-top:10px; display:none;"></div>
@@ -41,6 +45,23 @@
         </div>
     </div>
     <script>
+        // Toggle password visibility
+        document.querySelectorAll('.toggle-password-visibility').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const targetId = btn.getAttribute('data-target');
+                const input = document.getElementById(targetId);
+                if (input) {
+                    if (input.type === 'password') {
+                        input.type = 'text';
+                        btn.innerText = 'visibility';
+                    } else {
+                        input.type = 'password';
+                        btn.innerText = 'visibility_off';
+                    }
+                }
+            });
+        });
+
         document.getElementById('loginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const username = document.getElementById('username').value;

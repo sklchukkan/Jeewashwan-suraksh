@@ -44,7 +44,7 @@ public class SecurityConfig {
                 // Allow static resources
                 .requestMatchers("/", "/index.html", "/login.html", "/register.html", "/report.html", 
                                  "/map.html", "/admin-complaints.html", "/dashboard-admin.html", 
-                                 "/dashboard-ngo.html", "/dashboard-user.html", "/*.css", "/*.js", 
+                                 "/dashboard-ngo.html", "/dashboard-user.html", "/admin-ngos.html", "/*.css", "/*.js", 
                                  "/*.geojson", "/assets/**", "/favicon.ico").permitAll()
                 // Auth endpoints
                 .requestMatchers("/api/auth/**").permitAll()

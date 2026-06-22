@@ -95,6 +95,11 @@ public class AuthController {
                 hashedPassword,
                 role
             );
+            if (role.equals("ngo")) {
+                user.setApproved(false);
+            } else {
+                user.setApproved(true);
+            }
 
             User savedUser = userRepository.save(user);
 
