@@ -85,7 +85,76 @@ function updateCoordinates(lat, lng) {
     document.getElementById('latitude').value = lat;
     document.getElementById('longitude').value = lng;
     document.getElementById('coordDisplay').innerText = `Lat: ${lat}, Lng: ${lng}`;
-    document.getElementById('coordDisplay').style.color = 'var(--color-primary-dark)';
+}
+
+function updateRequirementUI(elementId, state) {
+    const el = document.getElementById(elementId);
+    if (!el) return;
+    const icon = el.querySelector('.material-icons-outlined');
+    if (state === true || state === 'success') {
+        el.style.color = '#16a34a'; // Green
+        if (icon) icon.innerText = 'check_circle';
+    } else if (state === 'error') {
+        el.style.color = '#ef4444'; // Red
+        if (icon) icon.innerText = 'cancel';
+    } else if (state === 'pending') {
+        el.style.color = '#64748b'; // Checking gray-blue
+        if (icon) icon.innerText = 'pending';
+    } else {
+        el.style.color = '#94a3b8'; // Grey
+        if (icon) icon.innerText = 'cancel';
+    }
+}
+
+function validateEmailLive(email) {
+    if (!email) return null;
+
+    const atIndex = email.indexOf('@');
+    if (atIndex === -1) {
+        return "Email must contain an '@' character.";
+    }
+
+    const username = email.substring(0, atIndex);
+    const domainPart = email.substring(atIndex + 1);
+
+    if (username.length < 6) {
+        return `Username before '@' is too short (currently ${username.length} characters, needs at least 6).`;
+    }
+    if (username.length > 64) {
+        return `Username before '@' is too long (currently ${username.length} characters, maximum 64).`;
+    }
+    
+    const usernameRegex = /^[A-Za-z0-9._%+-]+$/;
+    if (!usernameRegex.test(username)) {
+        return "Username contains invalid characters (only letters, numbers, and . _ % + - are allowed).";
+    }
+
+    if (!domainPart) {
+        return "Please enter a domain name after '@' (e.g. gmail.com).";
+    }
+
+    if (/[A-Z]/.test(domainPart)) {
+        return "Domain name after '@' must be in all lowercase letters (e.g. @gmail.com).";
+    }
+
+    const dotIndex = domainPart.indexOf('.');
+    const domainName = dotIndex === -1 ? domainPart : domainPart.substring(0, dotIndex);
+    
+    if (domainName !== 'gmail' && domainName !== 'outlook' && domainName !== 'yahoo') {
+        return "Only gmail, outlook, or yahoo domains are allowed.";
+    }
+
+    if (dotIndex === -1 || dotIndex === domainPart.length - 1) {
+        return "Domain must include a period followed by a top-level domain (e.g. .com).";
+    }
+
+    const tld = domainPart.substring(dotIndex);
+    const tldRegex = /^\.[a-z]{2,6}(\.[a-z]{2,6})?$/;
+    if (!tldRegex.test(tld)) {
+        return "Please enter a valid top-level domain (e.g. .com, .co.in).";
+    }
+
+    return null; // Valid!
 }
 
 
@@ -109,8 +178,16 @@ document.addEventListener('DOMContentLoaded', () => {
         .then(user => {
             console.log("Profile details fetched:", user);
             if (user.name) document.getElementById('reporterName').value = user.name;
-            if (user.phone) document.getElementById('reporterPhone').value = user.phone;
-            if (user.email) document.getElementById('reporterEmail').value = user.email;
+            if (user.phone) {
+                const phoneField = document.getElementById('reporterPhone');
+                phoneField.value = user.phone;
+                phoneField.dispatchEvent(new Event('input'));
+            }
+            if (user.email) {
+                const emailField = document.getElementById('reporterEmail');
+                emailField.value = user.email;
+                emailField.dispatchEvent(new Event('input'));
+            }
         })
         .catch(err => {
             console.error("Autofill error:", err);
@@ -153,14 +230,66 @@ document.addEventListener('DOMContentLoaded', () => {
         previewImage.src = '';
     });
 
-    // Clear validation errors on input
-    document.getElementById('reporterPhone').addEventListener('input', () => {
-        document.getElementById('reporterPhone').classList.remove('invalid');
-        document.getElementById('phoneError').style.display = 'none';
+    // Live validation for Phone Sighting
+    const phoneInput = document.getElementById('reporterPhone');
+    const phoneErrorEl = document.getElementById('phoneError');
+
+    phoneInput.addEventListener('input', () => {
+        const phoneVal = phoneInput.value.trim();
+
+        // Clear previous errors when typing
+        phoneInput.style.borderColor = '#cbd5e1';
+        phoneErrorEl.style.display = 'none';
+
+        const isDigitsMet = phoneVal.length > 0 && /^\d+$/.test(phoneVal);
+        const hasNonDigits = phoneVal.length > 0 && !/^\d+$/.test(phoneVal);
+
+        const isStartMet = phoneVal.length > 0 && /^[6-9]/.test(phoneVal);
+        const hasBadStart = phoneVal.length > 0 && !/^[6-9]/.test(phoneVal);
+
+        const isLengthMet = phoneVal.length === 10;
+        const isTooLong = phoneVal.length > 10;
+
+        updateRequirementUI('reqPhoneDigits', phoneVal.length === 0 ? 'default' : (isDigitsMet ? 'success' : 'error'));
+        updateRequirementUI('reqPhoneStart', phoneVal.length === 0 ? 'default' : (isStartMet ? 'success' : (hasBadStart ? 'error' : 'default')));
+        updateRequirementUI('reqPhoneLength', phoneVal.length === 0 ? 'default' : (isLengthMet ? 'success' : (isTooLong ? 'error' : 'default')));
+
+        const allMet = isDigitsMet && isStartMet && isLengthMet;
+        const anyError = hasNonDigits || hasBadStart || isTooLong;
+
+        if (allMet) {
+            phoneInput.style.borderColor = '#16a34a';
+        } else if (anyError) {
+            phoneInput.style.borderColor = '#ef4444';
+        } else {
+            phoneInput.style.borderColor = '#cbd5e1';
+        }
     });
-    document.getElementById('reporterEmail').addEventListener('input', () => {
-        document.getElementById('reporterEmail').classList.remove('invalid');
-        document.getElementById('emailError').style.display = 'none';
+
+    // Live validation for Email Sighting
+    const emailInput = document.getElementById('reporterEmail');
+    const emailErrorEl = document.getElementById('emailError');
+
+    emailInput.addEventListener('input', () => {
+        const emailVal = emailInput.value.trim();
+        if (emailVal === '') {
+            emailInput.style.borderColor = '#cbd5e1';
+            emailErrorEl.style.display = 'none';
+            return;
+        }
+
+        const errorMsg = validateEmailLive(emailVal);
+        if (errorMsg) {
+            emailInput.style.borderColor = '#ef4444';
+            emailErrorEl.innerText = errorMsg;
+            emailErrorEl.style.color = '#ef4444';
+            emailErrorEl.style.display = 'block';
+        } else {
+            emailInput.style.borderColor = '#16a34a';
+            emailErrorEl.innerText = 'Email is valid.';
+            emailErrorEl.style.color = '#16a34a';
+            emailErrorEl.style.display = 'block';
+        }
     });
 
     // Handle Form Submit
@@ -169,32 +298,34 @@ document.addEventListener('DOMContentLoaded', () => {
     reportForm.addEventListener('submit', (e) => {
         e.preventDefault();
 
-        // Clear previous error styles
-        document.getElementById('reporterPhone').classList.remove('invalid');
-        document.getElementById('phoneError').style.display = 'none';
-        document.getElementById('reporterEmail').classList.remove('invalid');
-        document.getElementById('emailError').style.display = 'none';
-
         let isValid = true;
 
-        // Validate Phone (digits only, exactly 10 digits)
-        const phoneInput = document.getElementById('reporterPhone');
         const phone = phoneInput.value.trim();
-        const phoneRegex = /^[6-9]\d{9}$/;
-        if (!phoneRegex.test(phone)) {
-            phoneInput.classList.add('invalid');
-            document.getElementById('phoneError').style.display = 'block';
+        const email = emailInput.value.trim();
+
+        // Phone submit check
+        const isPhoneDigitsMet = phone.length > 0 && /^\d+$/.test(phone);
+        const isPhoneStartMet = phone.length > 0 && /^[6-9]/.test(phone);
+        const isPhoneLengthMet = phone.length === 10;
+        if (!isPhoneDigitsMet || !isPhoneStartMet || !isPhoneLengthMet) {
+            phoneInput.style.borderColor = '#ef4444';
+            phoneErrorEl.style.display = 'block';
+
+            if (!isPhoneDigitsMet) updateRequirementUI('reqPhoneDigits', 'error');
+            if (!isPhoneStartMet) updateRequirementUI('reqPhoneStart', 'error');
+            if (!isPhoneLengthMet) updateRequirementUI('reqPhoneLength', 'error');
+
             isValid = false;
         }
 
-        // Validate Email
-        const emailInput = document.getElementById('reporterEmail');
-        const email = emailInput.value.trim();
+        // Email submit check
         if (email !== "") {
-            const emailRegex = /^[A-Za-z0-9._%+-]{6,64}@(gmail|outlook|yahoo)\.[A-Za-z]{2,6}(\.[A-Za-z]{2,6})?$/;
-            if (!emailRegex.test(email)) {
-                emailInput.classList.add('invalid');
-                document.getElementById('emailError').style.display = 'block';
+            const emailErrorMsg = validateEmailLive(email);
+            if (emailErrorMsg) {
+                emailInput.style.borderColor = '#ef4444';
+                emailErrorEl.innerText = emailErrorMsg;
+                emailErrorEl.style.color = '#ef4444';
+                emailErrorEl.style.display = 'block';
                 isValid = false;
             }
         }
@@ -256,6 +387,16 @@ document.addEventListener('DOMContentLoaded', () => {
             if (previewImage) previewImage.src = '';
             document.getElementById('coordDisplay').innerText = "None selected. Please click on the map.";
             document.getElementById('coordDisplay').style.color = 'inherit';
+
+            // Reset validation UI
+            phoneInput.style.borderColor = '#cbd5e1';
+            phoneErrorEl.style.display = 'none';
+            updateRequirementUI('reqPhoneDigits', 'default');
+            updateRequirementUI('reqPhoneStart', 'default');
+            updateRequirementUI('reqPhoneLength', 'default');
+
+            emailInput.style.borderColor = '#cbd5e1';
+            emailErrorEl.style.display = 'none';
 
             // Reset Map
             if (marker && pickerMap) {
